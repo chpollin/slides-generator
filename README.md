@@ -40,11 +40,21 @@ Apps Script lädt alle `.gs`-Dateien im Projekt als flachen Namespace. Die Ordne
 
 ## Deployment
 
-### Manuell (copy-paste)
+### Schnellweg (kombiniertes Build, copy-paste)
 
-Alle `.gs`-Dateien aus `src/`, `lib/`, `presentations/*/` nacheinander in den Apps-Script-Editor einfügen. Entry-Funktionen (`generateTag1` etc.) im Dropdown auswählen und ausführen.
+```
+./build.sh bibliotheksinformatik
+```
 
-### Via clasp (empfohlen)
+erzeugt `dist/bibliotheksinformatik.gs` — eine einzelne Datei mit Engine + Schema + Library + Präsentation. Kompletten Inhalt in den Apps-Script-Editor einfügen (überschreibt bestehenden Code), Entry-Funktion (`generateTag1` etc.) im Dropdown auswählen, ausführen.
+
+`dist/` ist nicht in `.gitignore` — die Builds werden mitgecheckt, damit der aktuelle Stand ohne lokales Bauen nachvollziehbar ist.
+
+### Modular (copy-paste pro Datei)
+
+Alle `.gs`-Dateien aus `src/`, `lib/`, `presentations/*/` einzeln in den Apps-Script-Editor anlegen. Unpraktischer, aber näher am Repo-Layout.
+
+### Via clasp (langfristig sauber)
 
 ```
 npm install -g @google/clasp
