@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 08:56 from 24e3f9e
+ * Generated 2026-04-14 09:05 from 831754e
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -165,8 +165,8 @@ var BUILDERS = {
           { find: 'www.dhcraft.org',              url: 'https://www.dhcraft.org' }
         ]
       });
-    // AI-Badge: dezent unten links
-    addAiBadge(slide, 30, 380);
+    // AI-Badge: direkt über dem CC-BY-Logo (unten rechts, aus Master)
+    addAiBadge(slide, D.W - D.MR - 115, 340);
   },
 
   // Section: großer fetter Titel, Untertitel grau

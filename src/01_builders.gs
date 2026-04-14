@@ -29,8 +29,8 @@ var BUILDERS = {
           { find: 'www.dhcraft.org',              url: 'https://www.dhcraft.org' }
         ]
       });
-    // AI-Badge: dezent unten links
-    addAiBadge(slide, 30, 380);
+    // AI-Badge: direkt über dem CC-BY-Logo (unten rechts, aus Master)
+    addAiBadge(slide, D.W - D.MR - 115, 340);
   },
 
   // Section: großer fetter Titel, Untertitel grau
