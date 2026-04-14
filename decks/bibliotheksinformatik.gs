@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 09:17 from 288ff6e
+ * Generated 2026-04-14 09:32 from 7174db1
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -50,14 +50,38 @@ var D = {
   S_LABEL:      10,
   S_LEARNING:   14,
 
+  // AI-Badge (siehe addAiBadge)
+  AI_BADGE_W: 88,
+  AI_BADGE_H: 16,
+
+  // Positionen von Master-Elementen (Gradient-Layout der Titelfolie).
+  // Abgeleitet per Screenshot — im Zweifelsfall im konkreten Master nachmessen.
+  MASTER: {
+    CC_BY: { x: 596, y: 361, w: 88, h: 44 },
+    LOGO:  { x: 650, y: 15,  w: 55, h: 40 }
+  },
+
+  // Layout-Konstanten pro Folientyp (magic numbers raus).
+  LAYOUT: {
+    title: {
+      textX:     325,
+      titleY:    130,
+      subtitleY: 210,
+      metaY:     260,
+      contactY:  345,
+      contactW:  225,
+      contactH:  55
+    }
+  },
+
   get CW() { return this.W - this.ML - this.MR; }
 };
 
 /**
- * Slide Library — Registry wiederverwendbarer Folien aus DHCraft-Präsentationen
+ * Slide Library — Registry wiederverwendbarer Folien aus DHCraft-Präsentationen.
  *
  * Jede Präsentation definiert ihr eigenes COPY_SLIDES (in presentations/<name>/00_config.gs)
- * und nutzt die hier registrierten Quell-Präsentationen.
+ * und referenziert darin Einträge aus SLIDE_REGISTRY.
  *
  * Siehe auch: Teaching/Slide Library.md im Obsidian-Vault.
  */
@@ -67,43 +91,50 @@ var SOURCE_PRES = {
   BIBLIOTHEK: '1BmPZTnL2JULg_nXrU8mx2EBfmhaDPaVnoiaZU8G1rjI'  // Bibliotheksinformatik (Quelle)
 };
 
-/**
- * Registrierte Slide-IDs, pro Thema gruppiert.
- * Die eigentliche Verwendung erfolgt über presentations/.../00_config.gs,
- * wo diese als COPY_SLIDES-Einträge mit ref-Keys zugeordnet werden.
- */
+// Flach — keine thematische Zwischenebene. Neue Einträge hier, nach Bedarf sortiert.
 var SLIDE_REGISTRY = {
-  informationswissenschaft: {
-    wissenspyramide:  { pres: SOURCE_PRES.DATA_LIB,   id: 'gc43cc7a388_0_7'   },
-    dikw_network:     { pres: SOURCE_PRES.DATA_LIB,   id: 'gc43cc7a388_0_248' }
-  },
-  llms: {
-    wie_llms:         { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_278' },
-    transformer:      { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_348' },
-    training_phases:  { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_359' }
-  }
+  wissenspyramide:  { pres: SOURCE_PRES.DATA_LIB,   id: 'gc43cc7a388_0_7'   },
+  dikw_network:     { pres: SOURCE_PRES.DATA_LIB,   id: 'gc43cc7a388_0_248' },
+  wie_llms:         { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_278' },
+  transformer:      { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_348' },
+  training_phases:  { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_359' }
 };
 
 /**
- * Core Engine — Slide-Clear + Dispatch
+ * Core Engine — Slide-Clear + Dispatch.
  *
  * generate(presId, content) wird aus presentations/.../99_run.gs aufgerufen.
- * Löscht alle Folien außer Folie 1, rendert dann Content-Array:
+ * Löscht alle Folien außer Folie 1, setzt CURRENT_PRES (damit copy-Builder
+ * die Target-Präsentation kennt) und rendert das Content-Array:
  *   - i=0: erste Folie behalten (Master-Titel-Layout mit Gradient/Logos),
- *     vorhandene Elemente löschen, neu bauen
- *   - i>0: neue BLANK-Folie anhängen, Builder ausführen
+ *     vorhandene Elemente löschen, neu bauen.
+ *   - i>0: neue BLANK-Folie anhängen.
+ *
+ * Unbekannte Folientypen (z.B. Tippfehler in `type`) werfen einen Fehler,
+ * statt silent zu failen.
  */
 
+// Referenz auf die aktuell generierte Präsentation. Wird von BUILDERS.copy
+// konsumiert. Apps Script läuft synchron — kein Race-Risiko bei generateAll().
+var CURRENT_PRES = null;
+
 function generate(presId, content) {
+  if (typeof PRESENTER === 'undefined') {
+    throw new Error('PRESENTER fehlt. Bitte in presentations/<name>/00_config.gs setzen.');
+  }
+
   var pres = SlidesApp.openById(presId);
+  CURRENT_PRES = pres;
+
   var slides = pres.getSlides();
   for (var i = slides.length - 1; i >= 1; i--) slides[i].remove();
 
   var slideNum = 0;
   for (var i = 0; i < content.length; i++) {
     var item = content[i];
-    var slide;
     slideNum++;
+
+    var slide;
     if (i === 0) {
       slide = slides[0];
       var els = slide.getPageElements();
@@ -112,22 +143,13 @@ function generate(presId, content) {
       slide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
     }
 
-    if (item.type === 'copy') {
-      var config = COPY_SLIDES[item.ref];
-      if (config) {
-        try { copySlideInto(pres, config, slide); }
-        catch (err) {
-          BUILDERS.image_placeholder(slide, {
-            title: item.fallbackTitle || 'Folie manuell kopieren',
-            placeholder: 'Manuell kopieren:\n' + (item.fallbackDesc || item.ref)
-          });
-        }
-      }
-    } else {
-      BUILDERS[item.type](slide, item);
+    var builder = BUILDERS[item.type];
+    if (!builder) {
+      throw new Error('Unknown slide type "' + item.type + '" at index ' + i);
     }
+    builder(slide, item);
 
-    // Foliennummern auf Content-Folien (nicht auf Titel, Section, Copy)
+    // Foliennummern auf Content-Folien (nicht auf Titel, Section, Copy).
     if (item.type !== 'title' && item.type !== 'section' && item.type !== 'copy') {
       addSlideNumber(slide, slideNum);
     }
@@ -135,85 +157,107 @@ function generate(presId, content) {
 }
 
 /**
- * BUILDERS — eine Render-Funktion pro Folientyp
+ * BUILDERS — eine Render-Funktion pro Folientyp.
  *
  * Jeder Builder erhält (slide, item) und baut das Layout auf.
- * Content-Builder setzen weiß (`setSolidFill('#ffffff')`), damit der
- * Master-Gradient dort NICHT durchscheint. Der title-Builder lässt
- * den Hintergrund unberührt — dort soll der Master-Gradient sichtbar sein.
+ * Content-Builder rufen fillBg(slide) (weißer Hintergrund, Master-Gradient
+ * scheint NUR auf Titelfolie durch). Quellenzeilen per addSource(slide, item.source).
+ *
+ * Der title-Builder liest die Sprecherdaten aus PRESENTER (pro Präsentation
+ * in 00_config.gs definiert). Fehlt PRESENTER, wirft generate() in core.gs
+ * einen sprechenden Fehler.
+ *
+ * Der copy-Builder holt sich die Target-Präsentation aus CURRENT_PRES, die
+ * in generate() gesetzt wird.
  */
 
 var BUILDERS = {
 
   // Titelfolie: Gradient + Logos kommen aus Master.
-  // Text, Meta und Kontakt auf rechter Seite — linke Hälfte bleibt frei für thematisches Bild.
-  // AI-Badge unten links.
+  // Text auf rechter Seite — linke Hälfte bleibt frei für thematisches Bild.
+  // AI-Badge direkt über dem CC-BY-Logo.
   title: function(slide, item) {
-    // KEIN setSolidFill — Master-Gradient soll durchscheinen
-    var textX = 325;
-    var textW = D.W - textX - D.MR;
-    addRichText(slide, item.title,    { x: textX, y: 130, w: textW, h: 75,  font: D.FONT, size: D.S_TITLE,    bold: true, color: D.TEXT_BLACK });
-    addRichText(slide, item.subtitle, { x: textX, y: 210, w: textW, h: 40,  font: D.FONT, size: D.S_SUBTITLE,             color: D.TEXT_DARK  });
-    addRichText(slide, item.meta,     { x: textX, y: 260, w: textW, h: 40,  font: D.FONT, size: D.S_META,                 color: D.TEXT_DARK, lineSpacing: 140 });
-    // Kontaktdaten rechts, aligned mit Text-Spalte (linke Hälfte bleibt für Bild)
-    addRichText(slide,
-      'Dr. Christopher Pollin MA MA\nchpollin.github.io \u00b7 christopher.pollin@dhcraft.org\nDigital Humanities Craft OG \u00b7 www.dhcraft.org',
-      { x: textX, y: 345, w: 225, h: 55, font: D.FONT, size: 8, color: D.TEXT_GRAY,
+    // KEIN fillBg — Master-Gradient soll durchscheinen.
+    var L = D.LAYOUT.title;
+    var textW = D.W - L.textX - D.MR;
+
+    addRichText(slide, item.title,    { x: L.textX, y: L.titleY,    w: textW, h: 75, font: D.FONT, size: D.S_TITLE,    bold: true, color: D.TEXT_BLACK });
+    addRichText(slide, item.subtitle, { x: L.textX, y: L.subtitleY, w: textW, h: 40, font: D.FONT, size: D.S_SUBTITLE,             color: D.TEXT_DARK  });
+    addRichText(slide, item.meta,     { x: L.textX, y: L.metaY,     w: textW, h: 40, font: D.FONT, size: D.S_META,                 color: D.TEXT_DARK, lineSpacing: 140 });
+
+    // Kontaktdaten aus PRESENTER, rechts aligned mit Text-Spalte.
+    var contact = PRESENTER.name + '\n'
+                + PRESENTER.github + ' \u00b7 ' + PRESENTER.email + '\n'
+                + PRESENTER.org + ' \u00b7 ' + PRESENTER.website;
+    addRichText(slide, contact,
+      { x: L.textX, y: L.contactY, w: L.contactW, h: L.contactH,
+        font: D.FONT, size: 8, color: D.TEXT_GRAY,
         links: [
-          { find: 'chpollin.github.io',           url: 'https://chpollin.github.io' },
-          { find: 'christopher.pollin@dhcraft.org', url: 'mailto:christopher.pollin@dhcraft.org' },
-          { find: 'www.dhcraft.org',              url: 'https://www.dhcraft.org' }
+          { find: PRESENTER.github,  url: 'https://' + PRESENTER.github },
+          { find: PRESENTER.email,   url: 'mailto:' + PRESENTER.email },
+          { find: PRESENTER.website, url: 'https://' + PRESENTER.website }
         ]
       });
-    // AI-Badge: direkt über dem CC-BY-Logo (unten rechts, aus Master)
-    addAiBadge(slide, D.W - D.MR - 115, 340);
+
+    // AI-Badge direkt über CC-BY (gleiche x, 6pt Gap).
+    var cc = D.MASTER.CC_BY;
+    addAiBadge(slide, cc.x, cc.y - D.AI_BADGE_H - 6);
   },
 
-  // Section: großer fetter Titel, Untertitel grau
+  // Section: großer fetter Titel, Untertitel grau.
   section: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, item.title, { x: D.ML, y: 140, w: D.CW, h: 55, font: D.FONT, size: D.S_SECTION, bold: true, color: D.TEXT_BLACK });
     if (item.subtitle) addRichText(slide, item.subtitle, { x: D.ML, y: 205, w: D.CW, h: 35, font: D.FONT, size: D.S_SUBTITLE, color: D.TEXT_GRAY });
   },
 
-  // Lernziele: Titel zentriert und fett, Body linksbündig
+  // Lernziele: Titel zentriert fett, Body linksbündig.
   learning: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, item.title, { x: D.ML, y: D.MT, w: D.CW, h: 35, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK, align: 'CENTER' });
-    addRichText(slide, item.body, { x: D.ML, y: 85, w: D.CW, h: 295, font: D.FONT, size: D.S_LEARNING, color: D.TEXT_DARK, lineSpacing: 150 });
+    addRichText(slide, item.body,  { x: D.ML, y: 85,  w: D.CW, h: 295, font: D.FONT, size: D.S_LEARNING, color: D.TEXT_DARK, lineSpacing: 150 });
   },
 
-  // Content: Titel fett zentriert, Body linksbündig, Quelle am Fuß
+  // Content: Titel fett zentriert, Body, optional Quelle am Fuß.
+  // Mit item.highlight=true: vertikaler Akzentbalken links neben Body.
   content: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, item.title, { x: D.ML, y: D.MT, w: D.CW, h: 35, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK, align: 'CENTER' });
+
+    if (item.highlight) {
+      var accent = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 30, 85, 3, 260);
+      accent.getFill().setSolidFill(D.TEXT_DARK);
+      accent.getBorder().setTransparent();
+    }
+
     var bH = item.source ? 260 : 295;
     var sz = item.small ? D.S_BODY_SM : D.S_BODY;
     addRichText(slide, item.body, { x: D.ML, y: 85, w: D.CW, h: bH, font: D.FONT, size: sz, color: D.TEXT_DARK, lineSpacing: 140 });
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
+    addSource(slide, item.source);
   },
 
-  // Diskussion: Großes ? als visueller Anker, Frage zentriert
+  // Diskussion: großes "?" als visueller Anker, Frage zentriert.
   discussion: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, '?', { x: D.W - 140, y: 30, w: 100, h: 120, font: D.FONT, size: 96, bold: true, color: '#e0e0e0' });
     addRichText(slide, 'Leitfrage zur Diskussion', { x: D.ML, y: 50, w: D.CW - 120, h: 22, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_DARK });
     addRichText(slide, item.question, { x: D.ML, y: 110, w: D.CW - 80, h: 250, font: D.FONT, size: D.S_QUESTION, bold: true, color: D.TEXT_BLACK, lineSpacing: 170 });
   },
 
-  // Übung: Label "Übung" + Titel fett, Body normal
+  // Übung: Label "Übung" + Titel fett, Body normal.
   exercise: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, '\u00dcbung', { x: D.ML, y: D.MT, w: D.CW, h: 20, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_DARK });
     addRichText(slide, item.title, { x: D.ML, y: 62, w: D.CW, h: 30, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK });
     addRichText(slide, item.body, { x: D.ML, y: 105, w: D.CW, h: 275, font: D.FONT, size: D.S_BODY, color: D.TEXT_DARK, lineSpacing: 140 });
   },
 
-  // Hands-On: Nummerierte Anleitung + gestrichelte Prompt-Box (Consolas)
+  // Hands-On: nummerierte Anleitung + gestrichelte Prompt-Box (Consolas).
   handson: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, 'Hands-On', { x: D.ML, y: D.MT, w: D.CW, h: 20, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_DARK });
     addRichText(slide, item.title, { x: D.ML, y: 62, w: D.CW, h: 30, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK });
+
     var leftW = item.prompt ? (D.CW / 2) - 15 : D.CW;
     addRichText(slide, item.body, { x: D.ML, y: 105, w: leftW, h: 240, font: D.FONT, size: D.S_BODY, color: D.TEXT_DARK, lineSpacing: 140 });
     if (item.prompt) {
@@ -221,25 +265,47 @@ var BUILDERS = {
       var boxW = D.CW - leftW - 20;
       addPromptBox(slide, item.prompt, boxX, 105, boxW, 240);
     }
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
+    addSource(slide, item.source);
   },
 
-  // Bildplatzhalter
+  // Bildplatzhalter.
   image_placeholder: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, item.title, { x: D.ML, y: D.MT, w: D.CW, h: 35, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK, align: 'CENTER' });
     addPlaceholderBox(slide, item.placeholder, D.ML, 85, D.CW, 250);
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
+    addSource(slide, item.source);
   },
 
-  // Split: Text links, Bildplatzhalter rechts
+  // Split: Text links, Bildplatzhalter rechts.
   content_with_image: function(slide, item) {
-    slide.getBackground().setSolidFill(D.BG);
+    fillBg(slide);
     addRichText(slide, item.title, { x: D.ML, y: D.MT, w: D.CW, h: 35, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK });
     var halfW = (D.CW / 2) - 12;
     addRichText(slide, item.body, { x: D.ML, y: 85, w: halfW, h: 260, font: D.FONT, size: D.S_BODY_SM, color: D.TEXT_DARK, lineSpacing: 140 });
     addPlaceholderBox(slide, item.placeholder, D.ML + halfW + 24, 85, halfW, 260);
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
+    addSource(slide, item.source);
+  },
+
+  // Copy: Folie aus anderer Präsentation kopieren.
+  // Nutzt CURRENT_PRES (in generate() gesetzt), weil copySlideInto die
+  // Target-Präsentation braucht — nicht nur das Slide-Objekt.
+  copy: function(slide, item) {
+    var config = COPY_SLIDES[item.ref];
+    if (!config) {
+      BUILDERS.image_placeholder(slide, {
+        title: item.fallbackTitle || 'Folie manuell kopieren',
+        placeholder: 'Ref nicht gefunden: ' + item.ref
+      });
+      return;
+    }
+    try {
+      copySlideInto(CURRENT_PRES, config, slide);
+    } catch (err) {
+      BUILDERS.image_placeholder(slide, {
+        title: item.fallbackTitle || 'Folie manuell kopieren',
+        placeholder: 'Manuell kopieren:\n' + (item.fallbackDesc || item.ref)
+      });
+    }
   }
 };
 
@@ -316,16 +382,27 @@ function parseInlineFormatting(text) {
 }
 
 /**
- * Shape-Helpers — Linien, Foliennummer, Boxen
+ * Shape-Helpers und Layout-Utilities.
  *
- * addPromptBox: gestrichelte hellgraue Box mit Monospace-Text (Consolas).
- * addPlaceholderBox: gestrichelte Platzhalter-Box mit kursiver Beschreibung.
+ * fillBg(slide)         — weißer Hintergrund auf Content-Folien (Master-Gradient nur auf Titel).
+ * addSource(slide, s)   — kursive Quellenzeile am Fuß (y=370), grau.
+ * addSlideNumber        — Foliennummer unten rechts.
+ * addPromptBox          — gestrichelte hellgraue Box mit Monospace-Text (Consolas).
+ * addPlaceholderBox     — gestrichelte Platzhalter-Box mit kursiver Beschreibung.
+ * addAiBadge            — dezente Pill, "KI-unterstützt erstellt".
  */
 
-function addLine(slide, x1, y1, x2, y2, color, weight) {
-  var line = slide.insertLine(SlidesApp.LineCategory.STRAIGHT, x1, y1, x2, y2);
-  line.getLineFill().setSolidFill(color);
-  line.setWeight(weight);
+function fillBg(slide) {
+  slide.getBackground().setSolidFill(D.BG);
+}
+
+function addSource(slide, text) {
+  if (!text) return;
+  addRichText(slide, text, {
+    x: D.ML, y: 370, w: D.CW, h: 25,
+    font: D.FONT, size: D.S_SOURCE,
+    italic: true, color: D.TEXT_GRAY
+  });
 }
 
 function addSlideNumber(slide, num) {
@@ -338,7 +415,8 @@ function addSlideNumber(slide, num) {
 }
 
 function addPromptBox(slide, text, x, y, w, h) {
-  var rect = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, x, y, w, h);
+  var pad = 2;
+  var rect = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, x + pad, y + pad, w - 2 * pad, h - 2 * pad);
   rect.getFill().setSolidFill('#f8f8f8');
   rect.getBorder().getLineFill().setSolidFill('#cccccc');
   rect.getBorder().setWeight(1);
@@ -348,24 +426,6 @@ function addPromptBox(slide, text, x, y, w, h) {
   tf.getTextStyle().setFontFamily(D.FONT_MONO).setFontSize(10).setForegroundColor(D.TEXT_DARK);
   rect.setContentAlignment(SlidesApp.ContentAlignment.TOP);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.START);
-  rect.setLeft(x + 2).setTop(y + 2).setWidth(w - 4).setHeight(h - 4);
-}
-
-/**
- * AI-Badge — dezente Kennzeichnung, dass die Folien KI-unterstützt erstellt wurden.
- * Kleine Pill-Shape mit leichtem Rahmen, 7pt-Text. Auf Titelfolien platziert.
- */
-function addAiBadge(slide, x, y) {
-  var w = 115, h = 16;
-  var rect = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, w, h);
-  rect.getFill().setTransparent();
-  rect.getBorder().getLineFill().setSolidFill('#cccccc');
-  rect.getBorder().setWeight(0.5);
-  var tf = rect.getText();
-  tf.setText('\u2733 KI-unterst\u00fctzt erstellt');
-  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
-  rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
-  tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
 }
 
 function addPlaceholderBox(slide, text, x, y, w, h) {
@@ -377,6 +437,22 @@ function addPlaceholderBox(slide, text, x, y, w, h) {
   var tf = rect.getText();
   tf.setText(text);
   tf.getTextStyle().setFontFamily(D.FONT).setFontSize(D.S_BODY_SM).setForegroundColor(D.TEXT_GRAY).setItalic(true);
+  rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
+  tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+}
+
+/**
+ * AI-Badge — kleine Pill mit dezent grauem Rahmen. Breite aus D.AI_BADGE_W,
+ * damit sie an die CC-BY-Breite angeglichen werden kann.
+ */
+function addAiBadge(slide, x, y) {
+  var rect = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, D.AI_BADGE_W, D.AI_BADGE_H);
+  rect.getFill().setTransparent();
+  rect.getBorder().getLineFill().setSolidFill('#cccccc');
+  rect.getBorder().setWeight(0.5);
+  var tf = rect.getText();
+  tf.setText('\u2733 KI-unterst\u00fctzt');
+  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
   rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
 }
@@ -412,22 +488,31 @@ function copySlideInto(targetPres, config, placeholderSlide) {
  * Bibliotheksinformatik — Konfiguration
  *
  * VU Künstliche Intelligenz in Bibliotheken, 3 Tage, Juni 2026.
- * Ziel-Präsentationen und Slide-Copy-Konfiguration.
- *
- * Schema wird aus src/schemas/dhcraft.gs geladen (D wird dort gesetzt).
+ * Ziel-Präsentationen, Sprecher-Daten und Slide-Copy-Konfiguration.
  */
 
 var PRES_TAG1 = '1p6oRuF2NBqXm3jZ_VuNyST7qzpzbG1AFWuXUswbMmCQ';
 var PRES_TAG2 = '1TDVFRRuh4xNx-SeZRSC1NcRgzWv-6EOZTIzRQ6_wZy0';
 var PRES_TAG3 = '17RUPp3cDkwGM2CLISMbRu6uRKI0XSTxC0-qaaHkNCic';
 
-// COPY_SLIDES bezieht die registrierten Einträge aus lib/slide-library.gs
+// Kontaktdaten, die der Title-Builder in die Titelfolien einsetzt.
+// Engine wirft Fehler, wenn PRESENTER fehlt.
+var PRESENTER = {
+  name:    'Dr. Christopher Pollin MA MA',
+  github:  'chpollin.github.io',
+  email:   'christopher.pollin@dhcraft.org',
+  org:     'Digital Humanities Craft OG',
+  website: 'www.dhcraft.org'
+};
+
+// Ausgewählte Slides aus lib/slide-library.gs. Keys sind die refs,
+// die im Content-Array als { type: 'copy', ref: '...' } erscheinen.
 var COPY_SLIDES = {
-  wissenspyramide:  SLIDE_REGISTRY.informationswissenschaft.wissenspyramide,
-  dikw_network:     SLIDE_REGISTRY.informationswissenschaft.dikw_network,
-  wie_llms:         SLIDE_REGISTRY.llms.wie_llms,
-  transformer:      SLIDE_REGISTRY.llms.transformer,
-  training_phases:  SLIDE_REGISTRY.llms.training_phases
+  wissenspyramide:  SLIDE_REGISTRY.wissenspyramide,
+  dikw_network:     SLIDE_REGISTRY.dikw_network,
+  wie_llms:         SLIDE_REGISTRY.wie_llms,
+  transformer:      SLIDE_REGISTRY.transformer,
+  training_phases:  SLIDE_REGISTRY.training_phases
 };
 
 // TAG 1 — Die Bibliothek als KI-Umgebung (22 Folien)

@@ -1,14 +1,25 @@
 /**
- * Shape-Helpers — Linien, Foliennummer, Boxen
+ * Shape-Helpers und Layout-Utilities.
  *
- * addPromptBox: gestrichelte hellgraue Box mit Monospace-Text (Consolas).
- * addPlaceholderBox: gestrichelte Platzhalter-Box mit kursiver Beschreibung.
+ * fillBg(slide)         — weißer Hintergrund auf Content-Folien (Master-Gradient nur auf Titel).
+ * addSource(slide, s)   — kursive Quellenzeile am Fuß (y=370), grau.
+ * addSlideNumber        — Foliennummer unten rechts.
+ * addPromptBox          — gestrichelte hellgraue Box mit Monospace-Text (Consolas).
+ * addPlaceholderBox     — gestrichelte Platzhalter-Box mit kursiver Beschreibung.
+ * addAiBadge            — dezente Pill, "KI-unterstützt erstellt".
  */
 
-function addLine(slide, x1, y1, x2, y2, color, weight) {
-  var line = slide.insertLine(SlidesApp.LineCategory.STRAIGHT, x1, y1, x2, y2);
-  line.getLineFill().setSolidFill(color);
-  line.setWeight(weight);
+function fillBg(slide) {
+  slide.getBackground().setSolidFill(D.BG);
+}
+
+function addSource(slide, text) {
+  if (!text) return;
+  addRichText(slide, text, {
+    x: D.ML, y: 370, w: D.CW, h: 25,
+    font: D.FONT, size: D.S_SOURCE,
+    italic: true, color: D.TEXT_GRAY
+  });
 }
 
 function addSlideNumber(slide, num) {
@@ -21,7 +32,8 @@ function addSlideNumber(slide, num) {
 }
 
 function addPromptBox(slide, text, x, y, w, h) {
-  var rect = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, x, y, w, h);
+  var pad = 2;
+  var rect = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, x + pad, y + pad, w - 2 * pad, h - 2 * pad);
   rect.getFill().setSolidFill('#f8f8f8');
   rect.getBorder().getLineFill().setSolidFill('#cccccc');
   rect.getBorder().setWeight(1);
@@ -31,24 +43,6 @@ function addPromptBox(slide, text, x, y, w, h) {
   tf.getTextStyle().setFontFamily(D.FONT_MONO).setFontSize(10).setForegroundColor(D.TEXT_DARK);
   rect.setContentAlignment(SlidesApp.ContentAlignment.TOP);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.START);
-  rect.setLeft(x + 2).setTop(y + 2).setWidth(w - 4).setHeight(h - 4);
-}
-
-/**
- * AI-Badge — dezente Kennzeichnung, dass die Folien KI-unterstützt erstellt wurden.
- * Kleine Pill-Shape mit leichtem Rahmen, 7pt-Text. Auf Titelfolien platziert.
- */
-function addAiBadge(slide, x, y) {
-  var w = 115, h = 16;
-  var rect = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, w, h);
-  rect.getFill().setTransparent();
-  rect.getBorder().getLineFill().setSolidFill('#cccccc');
-  rect.getBorder().setWeight(0.5);
-  var tf = rect.getText();
-  tf.setText('\u2733 KI-unterst\u00fctzt erstellt');
-  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
-  rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
-  tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
 }
 
 function addPlaceholderBox(slide, text, x, y, w, h) {
@@ -60,6 +54,22 @@ function addPlaceholderBox(slide, text, x, y, w, h) {
   var tf = rect.getText();
   tf.setText(text);
   tf.getTextStyle().setFontFamily(D.FONT).setFontSize(D.S_BODY_SM).setForegroundColor(D.TEXT_GRAY).setItalic(true);
+  rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
+  tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+}
+
+/**
+ * AI-Badge — kleine Pill mit dezent grauem Rahmen. Breite aus D.AI_BADGE_W,
+ * damit sie an die CC-BY-Breite angeglichen werden kann.
+ */
+function addAiBadge(slide, x, y) {
+  var rect = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, D.AI_BADGE_W, D.AI_BADGE_H);
+  rect.getFill().setTransparent();
+  rect.getBorder().getLineFill().setSolidFill('#cccccc');
+  rect.getBorder().setWeight(0.5);
+  var tf = rect.getText();
+  tf.setText('\u2733 KI-unterst\u00fctzt');
+  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
   rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
 }

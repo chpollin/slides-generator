@@ -68,7 +68,10 @@ Die `.clasp.json` mit der Script-ID wird lokal angelegt und ist via `.gitignore`
 ## Neues Präsentations-Paket anlegen
 
 1. Ordner unter `presentations/<name>/` erstellen
-2. `00_config.gs` mit Ziel-Präsentations-IDs und `COPY_SLIDES`
+2. `00_config.gs` mit:
+   - Ziel-Präsentations-IDs (`var PRES_... = '...'`)
+   - **`var PRESENTER = { name, github, email, org, website }`** — Kontakt-Daten, die auf Titelfolien erscheinen. Engine wirft Fehler, wenn fehlt.
+   - `COPY_SLIDES` — Auswahl aus `SLIDE_REGISTRY` (in `lib/slide-library.gs`)
 3. Eine oder mehrere Content-Funktionen (`getXxxContent()`) je nach Foliensatz
 4. `99_run.gs` mit Entry Points (`function generateXxx() { generate(PRES_ID, getXxxContent()); }`)
 5. Content-Funktionen präfixieren, wenn mehrere Präsentationen im selben Apps-Script-Projekt liegen sollen (z.B. `bib_getTag1Content`)

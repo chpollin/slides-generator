@@ -42,5 +42,29 @@ var D = {
   S_LABEL:      10,
   S_LEARNING:   14,
 
+  // AI-Badge (siehe addAiBadge)
+  AI_BADGE_W: 88,
+  AI_BADGE_H: 16,
+
+  // Positionen von Master-Elementen (Gradient-Layout der Titelfolie).
+  // Abgeleitet per Screenshot — im Zweifelsfall im konkreten Master nachmessen.
+  MASTER: {
+    CC_BY: { x: 596, y: 361, w: 88, h: 44 },
+    LOGO:  { x: 650, y: 15,  w: 55, h: 40 }
+  },
+
+  // Layout-Konstanten pro Folientyp (magic numbers raus).
+  LAYOUT: {
+    title: {
+      textX:     325,
+      titleY:    130,
+      subtitleY: 210,
+      metaY:     260,
+      contactY:  345,
+      contactW:  225,
+      contactH:  55
+    }
+  },
+
   get CW() { return this.W - this.ML - this.MR; }
 };
