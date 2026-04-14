@@ -41,9 +41,9 @@ var BUILDERS = {
         ]
       });
 
-    // AI-Badge direkt über CC-BY (gleiche x, 6pt Gap).
+    // AI-Badge direkt über CC-BY: rechts-bündig mit CC-BY rechter Kante, 6pt Gap.
     var cc = D.MASTER.CC_BY;
-    addAiBadge(slide, cc.x, cc.y - D.AI_BADGE_H - 6);
+    addAiBadge(slide, cc.x + cc.w - D.AI_BADGE_W, cc.y - D.AI_BADGE_H - 6);
   },
 
   // Section: großer fetter Titel, Untertitel grau.

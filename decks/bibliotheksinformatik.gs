@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 09:32 from 7174db1
+ * Generated 2026-04-14 09:39 from 7a9dd5b
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -51,13 +51,13 @@ var D = {
   S_LEARNING:   14,
 
   // AI-Badge (siehe addAiBadge)
-  AI_BADGE_W: 88,
+  AI_BADGE_W: 110,
   AI_BADGE_H: 16,
 
   // Positionen von Master-Elementen (Gradient-Layout der Titelfolie).
   // Abgeleitet per Screenshot — im Zweifelsfall im konkreten Master nachmessen.
   MASTER: {
-    CC_BY: { x: 596, y: 361, w: 88, h: 44 },
+    CC_BY: { x: 625, y: 365, w: 70, h: 40 },
     LOGO:  { x: 650, y: 15,  w: 55, h: 40 }
   },
 
@@ -199,9 +199,9 @@ var BUILDERS = {
         ]
       });
 
-    // AI-Badge direkt über CC-BY (gleiche x, 6pt Gap).
+    // AI-Badge direkt über CC-BY: rechts-bündig mit CC-BY rechter Kante, 6pt Gap.
     var cc = D.MASTER.CC_BY;
-    addAiBadge(slide, cc.x, cc.y - D.AI_BADGE_H - 6);
+    addAiBadge(slide, cc.x + cc.w - D.AI_BADGE_W, cc.y - D.AI_BADGE_H - 6);
   },
 
   // Section: großer fetter Titel, Untertitel grau.
@@ -451,7 +451,7 @@ function addAiBadge(slide, x, y) {
   rect.getBorder().getLineFill().setSolidFill('#cccccc');
   rect.getBorder().setWeight(0.5);
   var tf = rect.getText();
-  tf.setText('\u2733 KI-unterst\u00fctzt');
+  tf.setText('\u2733 Slides are LLM-assisted');
   tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
   rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);

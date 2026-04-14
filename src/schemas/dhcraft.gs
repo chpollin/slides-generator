@@ -43,13 +43,13 @@ var D = {
   S_LEARNING:   14,
 
   // AI-Badge (siehe addAiBadge)
-  AI_BADGE_W: 88,
+  AI_BADGE_W: 110,
   AI_BADGE_H: 16,
 
   // Positionen von Master-Elementen (Gradient-Layout der Titelfolie).
   // Abgeleitet per Screenshot — im Zweifelsfall im konkreten Master nachmessen.
   MASTER: {
-    CC_BY: { x: 596, y: 361, w: 88, h: 44 },
+    CC_BY: { x: 625, y: 365, w: 70, h: 40 },
     LOGO:  { x: 650, y: 15,  w: 55, h: 40 }
   },
 
