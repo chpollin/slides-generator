@@ -69,7 +69,7 @@ function addAiBadge(slide, x, y) {
   rect.getBorder().setWeight(0.5);
   var tf = rect.getText();
   tf.setText('\u2733 Slides are LLM-assisted');
-  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
+  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(D.AI_BADGE_FONT).setForegroundColor(D.TEXT_MUTED);
   rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
 }

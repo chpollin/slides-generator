@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 09:39 from 7a9dd5b
+ * Generated 2026-04-14 09:47 from 9d4d436
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -50,16 +50,11 @@ var D = {
   S_LABEL:      10,
   S_LEARNING:   14,
 
-  // AI-Badge (siehe addAiBadge)
-  AI_BADGE_W: 110,
-  AI_BADGE_H: 16,
-
-  // Positionen von Master-Elementen (Gradient-Layout der Titelfolie).
-  // Abgeleitet per Screenshot — im Zweifelsfall im konkreten Master nachmessen.
-  MASTER: {
-    CC_BY: { x: 625, y: 365, w: 70, h: 40 },
-    LOGO:  { x: 650, y: 15,  w: 55, h: 40 }
-  },
+  // AI-Badge (siehe addAiBadge).
+  // Werte aus Google-Slides-UI vermessen (cm) und in pt umgerechnet (1 cm = 28.35 pt).
+  AI_BADGE_W:    71,  // 2.5 cm
+  AI_BADGE_H:    28,  // 1.0 cm
+  AI_BADGE_FONT:  6,  // pt
 
   // Layout-Konstanten pro Folientyp (magic numbers raus).
   LAYOUT: {
@@ -70,7 +65,10 @@ var D = {
       metaY:     260,
       contactY:  345,
       contactW:  225,
-      contactH:  55
+      contactH:  55,
+      // Badge-Position direkt über CC-BY im Master (vermessen in Slides-UI).
+      badgeX:    545,  // 19.22 cm
+      badgeY:    372   // 13.13 cm
     }
   },
 
@@ -199,9 +197,8 @@ var BUILDERS = {
         ]
       });
 
-    // AI-Badge direkt über CC-BY: rechts-bündig mit CC-BY rechter Kante, 6pt Gap.
-    var cc = D.MASTER.CC_BY;
-    addAiBadge(slide, cc.x + cc.w - D.AI_BADGE_W, cc.y - D.AI_BADGE_H - 6);
+    // AI-Badge: feste Position aus Slides-UI vermessen (in Schema).
+    addAiBadge(slide, L.badgeX, L.badgeY);
   },
 
   // Section: großer fetter Titel, Untertitel grau.
@@ -452,7 +449,7 @@ function addAiBadge(slide, x, y) {
   rect.getBorder().setWeight(0.5);
   var tf = rect.getText();
   tf.setText('\u2733 Slides are LLM-assisted');
-  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
+  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(D.AI_BADGE_FONT).setForegroundColor(D.TEXT_MUTED);
   rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
 }

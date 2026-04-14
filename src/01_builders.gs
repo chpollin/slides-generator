@@ -41,9 +41,8 @@ var BUILDERS = {
         ]
       });
 
-    // AI-Badge direkt über CC-BY: rechts-bündig mit CC-BY rechter Kante, 6pt Gap.
-    var cc = D.MASTER.CC_BY;
-    addAiBadge(slide, cc.x + cc.w - D.AI_BADGE_W, cc.y - D.AI_BADGE_H - 6);
+    // AI-Badge: feste Position aus Slides-UI vermessen (in Schema).
+    addAiBadge(slide, L.badgeX, L.badgeY);
   },
 
   // Section: großer fetter Titel, Untertitel grau.

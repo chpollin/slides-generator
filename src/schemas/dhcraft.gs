@@ -42,16 +42,11 @@ var D = {
   S_LABEL:      10,
   S_LEARNING:   14,
 
-  // AI-Badge (siehe addAiBadge)
-  AI_BADGE_W: 110,
-  AI_BADGE_H: 16,
-
-  // Positionen von Master-Elementen (Gradient-Layout der Titelfolie).
-  // Abgeleitet per Screenshot — im Zweifelsfall im konkreten Master nachmessen.
-  MASTER: {
-    CC_BY: { x: 625, y: 365, w: 70, h: 40 },
-    LOGO:  { x: 650, y: 15,  w: 55, h: 40 }
-  },
+  // AI-Badge (siehe addAiBadge).
+  // Werte aus Google-Slides-UI vermessen (cm) und in pt umgerechnet (1 cm = 28.35 pt).
+  AI_BADGE_W:    71,  // 2.5 cm
+  AI_BADGE_H:    28,  // 1.0 cm
+  AI_BADGE_FONT:  6,  // pt
 
   // Layout-Konstanten pro Folientyp (magic numbers raus).
   LAYOUT: {
@@ -62,7 +57,10 @@ var D = {
       metaY:     260,
       contactY:  345,
       contactW:  225,
-      contactH:  55
+      contactH:  55,
+      // Badge-Position direkt über CC-BY im Master (vermessen in Slides-UI).
+      badgeX:    545,  // 19.22 cm
+      badgeY:    372   // 13.13 cm
     }
   },
 
