@@ -40,15 +40,15 @@ Apps Script lädt alle `.gs`-Dateien im Projekt als flachen Namespace. Die Ordne
 
 ## Deployment
 
-### Schnellweg (kombiniertes Build, copy-paste)
+### Schnellweg (fertiges Deck, copy-paste)
 
 ```
 ./build.sh bibliotheksinformatik
 ```
 
-erzeugt `dist/bibliotheksinformatik.gs` — eine einzelne Datei mit Engine + Schema + Library + Präsentation. Kompletten Inhalt in den Apps-Script-Editor einfügen (überschreibt bestehenden Code), Entry-Funktion (`generateTag1` etc.) im Dropdown auswählen, ausführen.
+erzeugt `decks/bibliotheksinformatik.gs` — eine einzelne Datei mit Engine + Schema + Library + Präsentations-Content. Das ist das **fertige Slide-Deck-Script**, das in den Apps-Script-Editor gepastet wird (überschreibt bestehenden Code). Entry-Funktion (`generateTag1` etc.) im Dropdown auswählen, ausführen.
 
-`dist/` ist nicht in `.gitignore` — die Builds werden mitgecheckt, damit der aktuelle Stand ohne lokales Bauen nachvollziehbar ist.
+`decks/` ist **nicht** in `.gitignore` — die gebauten Decks werden mitgecheckt, damit der aktuelle Stand ohne lokales Bauen nachvollziehbar ist.
 
 ### Modular (copy-paste pro Datei)
 

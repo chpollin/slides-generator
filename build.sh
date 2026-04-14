@@ -1,19 +1,19 @@
 #!/bin/bash
-# Concat engine + presentation into a single .gs file for manual paste into Apps Script.
+# Build a deck: concat engine + presentation sources into a single .gs for paste into Apps Script.
 # Usage:  ./build.sh <presentation-name>
-# Output: dist/<presentation-name>.gs
+# Output: decks/<presentation-name>.gs
 
 set -e
 PRES="${1:-bibliotheksinformatik}"
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-OUT="$ROOT/dist/$PRES.gs"
+OUT="$ROOT/decks/$PRES.gs"
 
 if [ ! -d "$ROOT/presentations/$PRES" ]; then
   echo "presentation not found: $PRES" >&2
   exit 1
 fi
 
-mkdir -p "$ROOT/dist"
+mkdir -p "$ROOT/decks"
 
 {
   echo "/**"
