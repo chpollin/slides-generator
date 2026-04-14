@@ -1,8 +1,8 @@
 /**
  * Slide Library — Registry wiederverwendbarer Folien aus DHCraft-Präsentationen
  *
- * Jede Präsentation definiert ihr eigenes COPY_SLIDES (in presentations/*/00_config.gs),
- * nutzt aber die hier registrierten Quell-Präsentationen.
+ * Jede Präsentation definiert ihr eigenes COPY_SLIDES (in presentations/<name>/00_config.gs)
+ * und nutzt die hier registrierten Quell-Präsentationen.
  *
  * Siehe auch: Teaching/Slide Library.md im Obsidian-Vault.
  */

@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 08:42 from 24ae6c9
+ * Generated 2026-04-14 08:44 from 61c72ef
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -56,8 +56,8 @@ var D = {
 /**
  * Slide Library — Registry wiederverwendbarer Folien aus DHCraft-Präsentationen
  *
- * Jede Präsentation definiert ihr eigenes COPY_SLIDES (in presentations/*/00_config.gs),
- * nutzt aber die hier registrierten Quell-Präsentationen.
+ * Jede Präsentation definiert ihr eigenes COPY_SLIDES (in presentations/<name>/00_config.gs)
+ * und nutzt die hier registrierten Quell-Präsentationen.
  *
  * Siehe auch: Teaching/Slide Library.md im Obsidian-Vault.
  */
