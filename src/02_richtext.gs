@@ -35,6 +35,21 @@ function addRichText(slide, rawText, opts) {
     para.setParagraphAlignment(SlidesApp.ParagraphAlignment.START);
   }
   if (opts.lineSpacing) para.setLineSpacing(opts.lineSpacing);
+
+  // Links: nach Text-Aufbau Substrings finden und setLinkUrl anwenden.
+  // opts.links = [{find: 'chpollin.github.io', url: 'https://chpollin.github.io'}]
+  if (opts.links && opts.links.length) {
+    var full = tf.asString();
+    for (var l = 0; l < opts.links.length; l++) {
+      var link = opts.links[l];
+      var idx = full.indexOf(link.find);
+      if (idx !== -1) {
+        tf.getRange(idx, idx + link.find.length).getTextStyle()
+          .setLinkUrl(link.url)
+          .setForegroundColor(D.TEXT_TEAL);
+      }
+    }
+  }
   return box;
 }
 

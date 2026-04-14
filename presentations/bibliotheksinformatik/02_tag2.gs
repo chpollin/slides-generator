@@ -7,7 +7,7 @@ function getTag2Content() {
   return [
     { type: 'title', title: 'K\u00fcnstliche Intelligenz\nin Bibliotheken', subtitle: 'Wie Sprachmodelle funktionieren und wo sie scheitern', meta: 'Block 7a.4 Bibliotheksinformatik \u00b7 9. Juni 2026 \u00b7 Wien\nULG Library and Information Studies' },
 
-    { type: 'learning', title: 'Lernziele', body: 'Nach diesem Tag k\u00f6nnen Sie:\n\n1. Die Funktionsweise generativer **Sprachmodelle** erkl\u00e4ren und erste *Prompts* formulieren\n\n2. Systematische **Grenzen** von *LLMs* anhand konkreter Beispiele aus dem Bibliothekswesen identifizieren\n\n3. KI-Einsatzszenarien unter Gesichtspunkten der **Forschungsintegrit\u00e4t**, *Prozesstransparenz* und Modelloffenheit bewerten\n\n4. **Evaluierungsmethoden** f\u00fcr KI-Werkzeuge auf bibliothekarische Anwendungsf\u00e4lle anwenden' },
+    { type: 'learning', title: 'Lernziele', body: '1. Die Funktionsweise generativer **Sprachmodelle** erkl\u00e4ren und erste *Prompts* formulieren\n\n2. Systematische **Grenzen** von *LLMs* anhand konkreter Beispiele aus dem Bibliothekswesen identifizieren\n\n3. KI-Einsatzszenarien unter Gesichtspunkten der **Forschungsintegrit\u00e4t**, *Prozesstransparenz* und Modelloffenheit bewerten\n\n4. **Evaluierungsmethoden** f\u00fcr KI-Werkzeuge auf bibliothekarische Anwendungsf\u00e4lle anwenden' },
 
     { type: 'section', title: 'Block 1', subtitle: 'Grundlagen generativer KI' },
 

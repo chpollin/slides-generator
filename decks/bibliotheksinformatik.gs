@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 08:44 from 61c72ef
+ * Generated 2026-04-14 08:56 from 24e3f9e
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -31,7 +31,7 @@ var D = {
   TEXT_DARK:      '#333333',
   TEXT_GRAY:      '#666666',
   TEXT_MUTED:     '#888888',
-  TEXT_TEAL:      '#2a7a7a',
+  TEXT_TEAL:      '#2a7a7a',  // nur für Hyperlinks (via opts.links)
 
   BORDER_PLACEHOLDER: '#aaaaaa',
 
@@ -146,17 +146,27 @@ function generate(presId, content) {
 var BUILDERS = {
 
   // Titelfolie: Gradient + Logos kommen aus Master.
-  // Script platziert nur Text auf rechter Seite und Kontaktdaten unten links.
+  // Text, Meta und Kontakt auf rechter Seite — linke Hälfte bleibt frei für thematisches Bild.
+  // AI-Badge unten links.
   title: function(slide, item) {
     // KEIN setSolidFill — Master-Gradient soll durchscheinen
     var textX = 325;
     var textW = D.W - textX - D.MR;
-    addRichText(slide, item.title,    { x: textX, y: 130, w: textW, h: 100, font: D.FONT, size: D.S_TITLE,    bold: true, color: D.TEXT_BLACK });
-    addRichText(slide, item.meta,     { x: textX, y: 240, w: textW, h: 22,  font: D.FONT, size: D.S_META,                color: D.TEXT_TEAL  });
-    addRichText(slide, item.subtitle, { x: textX, y: 270, w: textW, h: 60,  font: D.FONT, size: D.S_SUBTITLE,             color: D.TEXT_GRAY  });
-    // Kontaktdaten unten LINKS (CC-BY-Logo aus Master liegt unten rechts)
-    addRichText(slide, 'Dr. Christopher Pollin MA MA\nchristopher.pollin@dhcraft.org\nDigital Humanities Craft OG \u00b7 www.dhcraft.org',
-      { x: 30, y: 355, w: 340, h: 45, font: D.FONT, size: 8, color: D.TEXT_GRAY });
+    addRichText(slide, item.title,    { x: textX, y: 130, w: textW, h: 75,  font: D.FONT, size: D.S_TITLE,    bold: true, color: D.TEXT_BLACK });
+    addRichText(slide, item.subtitle, { x: textX, y: 210, w: textW, h: 40,  font: D.FONT, size: D.S_SUBTITLE,             color: D.TEXT_DARK  });
+    addRichText(slide, item.meta,     { x: textX, y: 260, w: textW, h: 40,  font: D.FONT, size: D.S_META,                 color: D.TEXT_DARK, lineSpacing: 140 });
+    // Kontaktdaten rechts, aligned mit Text-Spalte (linke Hälfte bleibt für Bild)
+    addRichText(slide,
+      'Dr. Christopher Pollin MA MA\nchpollin.github.io \u00b7 christopher.pollin@dhcraft.org\nDigital Humanities Craft OG \u00b7 www.dhcraft.org',
+      { x: textX, y: 345, w: 280, h: 50, font: D.FONT, size: 8, color: D.TEXT_GRAY,
+        links: [
+          { find: 'chpollin.github.io',           url: 'https://chpollin.github.io' },
+          { find: 'christopher.pollin@dhcraft.org', url: 'mailto:christopher.pollin@dhcraft.org' },
+          { find: 'www.dhcraft.org',              url: 'https://www.dhcraft.org' }
+        ]
+      });
+    // AI-Badge: dezent unten links
+    addAiBadge(slide, 30, 380);
   },
 
   // Section: großer fetter Titel, Untertitel grau
@@ -180,21 +190,21 @@ var BUILDERS = {
     var bH = item.source ? 260 : 295;
     var sz = item.small ? D.S_BODY_SM : D.S_BODY;
     addRichText(slide, item.body, { x: D.ML, y: 85, w: D.CW, h: bH, font: D.FONT, size: sz, color: D.TEXT_DARK, lineSpacing: 140 });
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_TEAL });
+    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
   },
 
   // Diskussion: Großes ? als visueller Anker, Frage zentriert
   discussion: function(slide, item) {
     slide.getBackground().setSolidFill(D.BG);
     addRichText(slide, '?', { x: D.W - 140, y: 30, w: 100, h: 120, font: D.FONT, size: 96, bold: true, color: '#e0e0e0' });
-    addRichText(slide, 'Leitfrage zur Diskussion', { x: D.ML, y: 50, w: D.CW - 120, h: 22, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_TEAL });
+    addRichText(slide, 'Leitfrage zur Diskussion', { x: D.ML, y: 50, w: D.CW - 120, h: 22, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_DARK });
     addRichText(slide, item.question, { x: D.ML, y: 110, w: D.CW - 80, h: 250, font: D.FONT, size: D.S_QUESTION, bold: true, color: D.TEXT_BLACK, lineSpacing: 170 });
   },
 
   // Übung: Label "Übung" + Titel fett, Body normal
   exercise: function(slide, item) {
     slide.getBackground().setSolidFill(D.BG);
-    addRichText(slide, '\u00dcbung', { x: D.ML, y: D.MT, w: D.CW, h: 20, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_TEAL });
+    addRichText(slide, '\u00dcbung', { x: D.ML, y: D.MT, w: D.CW, h: 20, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_DARK });
     addRichText(slide, item.title, { x: D.ML, y: 62, w: D.CW, h: 30, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK });
     addRichText(slide, item.body, { x: D.ML, y: 105, w: D.CW, h: 275, font: D.FONT, size: D.S_BODY, color: D.TEXT_DARK, lineSpacing: 140 });
   },
@@ -202,7 +212,7 @@ var BUILDERS = {
   // Hands-On: Nummerierte Anleitung + gestrichelte Prompt-Box (Consolas)
   handson: function(slide, item) {
     slide.getBackground().setSolidFill(D.BG);
-    addRichText(slide, 'Hands-On', { x: D.ML, y: D.MT, w: D.CW, h: 20, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_TEAL });
+    addRichText(slide, 'Hands-On', { x: D.ML, y: D.MT, w: D.CW, h: 20, font: D.FONT, size: D.S_LABEL, bold: true, color: D.TEXT_DARK });
     addRichText(slide, item.title, { x: D.ML, y: 62, w: D.CW, h: 30, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK });
     var leftW = item.prompt ? (D.CW / 2) - 15 : D.CW;
     addRichText(slide, item.body, { x: D.ML, y: 105, w: leftW, h: 240, font: D.FONT, size: D.S_BODY, color: D.TEXT_DARK, lineSpacing: 140 });
@@ -211,7 +221,7 @@ var BUILDERS = {
       var boxW = D.CW - leftW - 20;
       addPromptBox(slide, item.prompt, boxX, 105, boxW, 240);
     }
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_TEAL });
+    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
   },
 
   // Bildplatzhalter
@@ -219,7 +229,7 @@ var BUILDERS = {
     slide.getBackground().setSolidFill(D.BG);
     addRichText(slide, item.title, { x: D.ML, y: D.MT, w: D.CW, h: 35, font: D.FONT, size: D.S_HEADING, bold: true, color: D.TEXT_BLACK, align: 'CENTER' });
     addPlaceholderBox(slide, item.placeholder, D.ML, 85, D.CW, 250);
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_TEAL });
+    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
   },
 
   // Split: Text links, Bildplatzhalter rechts
@@ -229,7 +239,7 @@ var BUILDERS = {
     var halfW = (D.CW / 2) - 12;
     addRichText(slide, item.body, { x: D.ML, y: 85, w: halfW, h: 260, font: D.FONT, size: D.S_BODY_SM, color: D.TEXT_DARK, lineSpacing: 140 });
     addPlaceholderBox(slide, item.placeholder, D.ML + halfW + 24, 85, halfW, 260);
-    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_TEAL });
+    if (item.source) addRichText(slide, item.source, { x: D.ML, y: 370, w: D.CW, h: 25, font: D.FONT, size: D.S_SOURCE, italic: true, color: D.TEXT_GRAY});
   }
 };
 
@@ -270,6 +280,21 @@ function addRichText(slide, rawText, opts) {
     para.setParagraphAlignment(SlidesApp.ParagraphAlignment.START);
   }
   if (opts.lineSpacing) para.setLineSpacing(opts.lineSpacing);
+
+  // Links: nach Text-Aufbau Substrings finden und setLinkUrl anwenden.
+  // opts.links = [{find: 'chpollin.github.io', url: 'https://chpollin.github.io'}]
+  if (opts.links && opts.links.length) {
+    var full = tf.asString();
+    for (var l = 0; l < opts.links.length; l++) {
+      var link = opts.links[l];
+      var idx = full.indexOf(link.find);
+      if (idx !== -1) {
+        tf.getRange(idx, idx + link.find.length).getTextStyle()
+          .setLinkUrl(link.url)
+          .setForegroundColor(D.TEXT_TEAL);
+      }
+    }
+  }
   return box;
 }
 
@@ -324,6 +349,23 @@ function addPromptBox(slide, text, x, y, w, h) {
   rect.setContentAlignment(SlidesApp.ContentAlignment.TOP);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.START);
   rect.setLeft(x + 2).setTop(y + 2).setWidth(w - 4).setHeight(h - 4);
+}
+
+/**
+ * AI-Badge — dezente Kennzeichnung, dass die Folien KI-unterstützt erstellt wurden.
+ * Kleine Pill-Shape mit leichtem Rahmen, 7pt-Text. Auf Titelfolien platziert.
+ */
+function addAiBadge(slide, x, y) {
+  var w = 115, h = 16;
+  var rect = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, w, h);
+  rect.getFill().setTransparent();
+  rect.getBorder().getLineFill().setSolidFill('#cccccc');
+  rect.getBorder().setWeight(0.5);
+  var tf = rect.getText();
+  tf.setText('\u2733 KI-unterst\u00fctzt erstellt');
+  tf.getTextStyle().setFontFamily(D.FONT).setFontSize(7).setForegroundColor(D.TEXT_MUTED);
+  rect.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
+  tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
 }
 
 function addPlaceholderBox(slide, text, x, y, w, h) {
@@ -395,7 +437,7 @@ function getTag1Content() {
   return [
     { type: 'title', title: 'K\u00fcnstliche Intelligenz\nin Bibliotheken', subtitle: 'Die Bibliothek als KI-Umgebung', meta: 'Block 7a.4 Bibliotheksinformatik \u00b7 8. Juni 2026 \u00b7 Wien\nULG Library and Information Studies' },
 
-    { type: 'learning', title: 'Lernziele', body: 'Nach diesem Tag k\u00f6nnen Sie:\n\n1. Den **kybernetischen Regelkreis** als Grundmodell f\u00fcr *KI-Agenten* erkl\u00e4ren\n\n2. Die **Bibliothek** aus informationswissenschaftlicher und Forschungsdatenperspektive als **KI-Umgebung** einordnen\n\n3. Den **Transformationsprozess** von Rohdaten zu strukturierter Information an einer *OCR-Pipeline* nachvollziehen\n\n4. **Wissensdokumente** in *Markdown* mit *YAML-Frontmatter* als Grundlage f\u00fcr *Context Engineering* erstellen' },
+    { type: 'learning', title: 'Lernziele', body: '1. Den **kybernetischen Regelkreis** als Grundmodell f\u00fcr *KI-Agenten* erkl\u00e4ren\n\n2. Die **Bibliothek** aus informationswissenschaftlicher und Forschungsdatenperspektive als **KI-Umgebung** einordnen\n\n3. Den **Transformationsprozess** von Rohdaten zu strukturierter Information an einer *OCR-Pipeline* nachvollziehen\n\n4. **Wissensdokumente** in *Markdown* mit *YAML-Frontmatter* als Grundlage f\u00fcr *Context Engineering* erstellen' },
 
     { type: 'content', title: 'Haus\u00fcbung: LLM-gest\u00fctzter Wissensraum', body: 'Erstellen Sie einen *Obsidian* Vault zu einem Themenfeld aus dem **Bibliothekswesen**.\n\nDer Vault enth\u00e4lt:\n\u2022 Mindestens 10 Wissensdokumente in *Markdown* mit *YAML-Frontmatter*\n\u2022 Mindestens 3 **Literaturnotizen** mit bibliographischen Angaben\n\u2022 1 *Map of Content* (MOC) als Einstiegsseite\n\u2022 Konsistente Ordnerstruktur, Verlinkung und Tag-Vergabe\n\n**Reflexion** (max. 2 Seiten PDF): Wie ver\u00e4ndert der Einsatz von *LLMs* bibliothekarische Arbeitsprozesse, und wo bleibt fachliche Urteilskraft unverzichtbar?\n\nAbgabe auf Moodle: Vault als ZIP + Reflexion als PDF. Details am Ende von Tag 3.' },
 
@@ -447,7 +489,7 @@ function getTag2Content() {
   return [
     { type: 'title', title: 'K\u00fcnstliche Intelligenz\nin Bibliotheken', subtitle: 'Wie Sprachmodelle funktionieren und wo sie scheitern', meta: 'Block 7a.4 Bibliotheksinformatik \u00b7 9. Juni 2026 \u00b7 Wien\nULG Library and Information Studies' },
 
-    { type: 'learning', title: 'Lernziele', body: 'Nach diesem Tag k\u00f6nnen Sie:\n\n1. Die Funktionsweise generativer **Sprachmodelle** erkl\u00e4ren und erste *Prompts* formulieren\n\n2. Systematische **Grenzen** von *LLMs* anhand konkreter Beispiele aus dem Bibliothekswesen identifizieren\n\n3. KI-Einsatzszenarien unter Gesichtspunkten der **Forschungsintegrit\u00e4t**, *Prozesstransparenz* und Modelloffenheit bewerten\n\n4. **Evaluierungsmethoden** f\u00fcr KI-Werkzeuge auf bibliothekarische Anwendungsf\u00e4lle anwenden' },
+    { type: 'learning', title: 'Lernziele', body: '1. Die Funktionsweise generativer **Sprachmodelle** erkl\u00e4ren und erste *Prompts* formulieren\n\n2. Systematische **Grenzen** von *LLMs* anhand konkreter Beispiele aus dem Bibliothekswesen identifizieren\n\n3. KI-Einsatzszenarien unter Gesichtspunkten der **Forschungsintegrit\u00e4t**, *Prozesstransparenz* und Modelloffenheit bewerten\n\n4. **Evaluierungsmethoden** f\u00fcr KI-Werkzeuge auf bibliothekarische Anwendungsf\u00e4lle anwenden' },
 
     { type: 'section', title: 'Block 1', subtitle: 'Grundlagen generativer KI' },
 
@@ -495,7 +537,7 @@ function getTag3Content() {
   return [
     { type: 'title', title: 'K\u00fcnstliche Intelligenz\nin Bibliotheken', subtitle: 'Vom Prompt zur Strategie', meta: 'Block 7a.4 Bibliotheksinformatik \u00b7 10. Juni 2026 \u00b7 Wien\nULG Library and Information Studies' },
 
-    { type: 'learning', title: 'Lernziele', body: 'Nach diesem Tag k\u00f6nnen Sie:\n\n1. *Best Practices* f\u00fcr *Prompts* in bibliographischen und erschlie\u00dfenden Aufgaben anwenden\n\n2. Eine mehrstufige **KI-Pipeline** von der *OCR* bis zur Metadatenanreicherung mit *Promptotyping* aufbauen\n\n3. *KI-Agenten* als Werkzeuge f\u00fcr bibliothekarische *Workflows* praktisch einsetzen\n\n4. Eine **KI-Einsatzstrategie** f\u00fcr den eigenen Arbeitskontext formulieren' },
+    { type: 'learning', title: 'Lernziele', body: '1. *Best Practices* f\u00fcr *Prompts* in bibliographischen und erschlie\u00dfenden Aufgaben anwenden\n\n2. Eine mehrstufige **KI-Pipeline** von der *OCR* bis zur Metadatenanreicherung mit *Promptotyping* aufbauen\n\n3. *KI-Agenten* als Werkzeuge f\u00fcr bibliothekarische *Workflows* praktisch einsetzen\n\n4. Eine **KI-Einsatzstrategie** f\u00fcr den eigenen Arbeitskontext formulieren' },
 
     { type: 'section', title: 'Block 1', subtitle: 'Prompt Engineering' },
 

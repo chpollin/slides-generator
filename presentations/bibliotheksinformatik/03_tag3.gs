@@ -7,7 +7,7 @@ function getTag3Content() {
   return [
     { type: 'title', title: 'K\u00fcnstliche Intelligenz\nin Bibliotheken', subtitle: 'Vom Prompt zur Strategie', meta: 'Block 7a.4 Bibliotheksinformatik \u00b7 10. Juni 2026 \u00b7 Wien\nULG Library and Information Studies' },
 
-    { type: 'learning', title: 'Lernziele', body: 'Nach diesem Tag k\u00f6nnen Sie:\n\n1. *Best Practices* f\u00fcr *Prompts* in bibliographischen und erschlie\u00dfenden Aufgaben anwenden\n\n2. Eine mehrstufige **KI-Pipeline** von der *OCR* bis zur Metadatenanreicherung mit *Promptotyping* aufbauen\n\n3. *KI-Agenten* als Werkzeuge f\u00fcr bibliothekarische *Workflows* praktisch einsetzen\n\n4. Eine **KI-Einsatzstrategie** f\u00fcr den eigenen Arbeitskontext formulieren' },
+    { type: 'learning', title: 'Lernziele', body: '1. *Best Practices* f\u00fcr *Prompts* in bibliographischen und erschlie\u00dfenden Aufgaben anwenden\n\n2. Eine mehrstufige **KI-Pipeline** von der *OCR* bis zur Metadatenanreicherung mit *Promptotyping* aufbauen\n\n3. *KI-Agenten* als Werkzeuge f\u00fcr bibliothekarische *Workflows* praktisch einsetzen\n\n4. Eine **KI-Einsatzstrategie** f\u00fcr den eigenen Arbeitskontext formulieren' },
 
     { type: 'section', title: 'Block 1', subtitle: 'Prompt Engineering' },
 

@@ -23,7 +23,7 @@ var D = {
   TEXT_DARK:      '#333333',
   TEXT_GRAY:      '#666666',
   TEXT_MUTED:     '#888888',
-  TEXT_TEAL:      '#2a7a7a',
+  TEXT_TEAL:      '#2a7a7a',  // nur für Hyperlinks (via opts.links)
 
   BORDER_PLACEHOLDER: '#aaaaaa',
 
