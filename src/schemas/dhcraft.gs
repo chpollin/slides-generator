@@ -19,8 +19,10 @@ var D = {
   BG:            '#ffffff',
   BG_PLACEHOLDER:'#f0f0f0',
 
-  TEXT_BLACK:     '#1a1a1a',
-  TEXT_DARK:      '#333333',
+  // Fließtext-Schrift ist pure schwarz (Kontrast bei Projektion).
+  // Grau nur für bewusst untergeordnete Elemente (Quellen, Kontakt, Section-Subtitle).
+  TEXT_BLACK:     '#000000',
+  TEXT_DARK:      '#000000',  // alias für Fließtext/Labels — bewusst = TEXT_BLACK
   TEXT_GRAY:      '#666666',
   TEXT_MUTED:     '#888888',
   TEXT_TEAL:      '#2a7a7a',  // nur für Hyperlinks (via opts.links)
