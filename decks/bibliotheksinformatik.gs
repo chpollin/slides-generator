@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 09:05 from 831754e
+ * Generated 2026-04-14 09:17 from 288ff6e
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -158,7 +158,7 @@ var BUILDERS = {
     // Kontaktdaten rechts, aligned mit Text-Spalte (linke Hälfte bleibt für Bild)
     addRichText(slide,
       'Dr. Christopher Pollin MA MA\nchpollin.github.io \u00b7 christopher.pollin@dhcraft.org\nDigital Humanities Craft OG \u00b7 www.dhcraft.org',
-      { x: textX, y: 345, w: 280, h: 50, font: D.FONT, size: 8, color: D.TEXT_GRAY,
+      { x: textX, y: 345, w: 225, h: 55, font: D.FONT, size: 8, color: D.TEXT_GRAY,
         links: [
           { find: 'chpollin.github.io',           url: 'https://chpollin.github.io' },
           { find: 'christopher.pollin@dhcraft.org', url: 'mailto:christopher.pollin@dhcraft.org' },
