@@ -6,7 +6,7 @@
  * addSlideNumber        — Foliennummer unten rechts.
  * addPromptBox          — gestrichelte hellgraue Box mit Monospace-Text (Consolas).
  * addPlaceholderBox     — gestrichelte Platzhalter-Box mit kursiver Beschreibung.
- * addAiBadge            — dezente Pill, "KI-unterstützt erstellt".
+ * addAiBadge            — dezente Pill, "✳ Slides are LLM-assisted".
  */
 
 function fillBg(slide) {

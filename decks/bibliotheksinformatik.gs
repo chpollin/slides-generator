@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 09:47 from 9d4d436
+ * Generated 2026-04-14 09:54 from d17afcd
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -386,7 +386,7 @@ function parseInlineFormatting(text) {
  * addSlideNumber        — Foliennummer unten rechts.
  * addPromptBox          — gestrichelte hellgraue Box mit Monospace-Text (Consolas).
  * addPlaceholderBox     — gestrichelte Platzhalter-Box mit kursiver Beschreibung.
- * addAiBadge            — dezente Pill, "KI-unterstützt erstellt".
+ * addAiBadge            — dezente Pill, "✳ Slides are LLM-assisted".
  */
 
 function fillBg(slide) {
