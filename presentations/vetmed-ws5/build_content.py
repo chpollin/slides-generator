@@ -20,24 +20,24 @@ slides = [
     # ------------------------------------------- Opener (Delta 10.06.2026)
     {"_delta": True,
      "type": "content",
-     "title": "Gestern erschienen: Claude Fable 5",
+     "title": "Claude Fable 5",
      "body": "Anthropic veröffentlicht am 9. Juni 2026 **Claude Fable 5**, das erste öffentliche Modell der **Mythos-Klasse**.\n\n"
-             "• Eine eigene Leistungsstufe **über** den bisherigen Spitzenmodellen\n"
-             "• Stand der Technik auf nahezu allen *Benchmarks*\n"
+             "• Eigene Leistungsstufe über den bisherigen Spitzenmodellen (*Opus*)\n"
+             "• Stand der Technik auf nahezu allen *Benchmarks*, darunter *Software Engineering* und Wissensarbeit\n"
              "• Arbeitet **länger autonom** an komplexen Aufgaben als jedes frühere Modell\n\n"
-             "**Die Entwicklung flacht nicht ab.** Was das für die tägliche Arbeit mit Daten heißt, ist Thema dieses Workshops.",
-     "source": "Anthropic (2026). Claude Fable 5 and Claude Mythos 5. anthropic.com/news.",
-     "notes": "Anthropic hat am 9. Juni 2026 Claude Fable 5 veroeffentlicht, das erste oeffentlich zugaengliche Modell der Mythos-Klasse. Es liegt als eigene Leistungsstufe ueber den bisherigen Opus-Spitzenmodellen, ist Stand der Technik auf nahezu allen Benchmarks und arbeitet laenger autonom an komplexen Aufgaben als jedes fruehere Claude-Modell. Die Entwicklung seit 2023 setzt sich damit ungebremst fort."},
+             "Drei Jahre nach dem *GPT-4*-Beispiel von 2023 (Teil 1) setzt sich die Entwicklung unvermindert fort.",
+     "source": "Anthropic (2026). Claude Fable 5 and Claude Mythos 5. anthropic.com/news/claude-fable-5-mythos-5 · Video: \"Claude Fable is Live...and its WILD!\", youtube.com/watch?v=KwQXyyVl2cM",
+     "notes": "Anthropic hat am 9. Juni 2026 Claude Fable 5 veroeffentlicht, das erste oeffentlich zugaengliche Modell der Mythos-Klasse. Fable 5 uebertrifft die Opus-Modelle bei laengeren, komplexeren Aufgaben und arbeitet laenger autonom als alle frueheren Claude-Modelle. Anthropic berichtet Bestwerte unter anderem in Software Engineering, Wissensarbeit, Bildverstehen und wissenschaftlicher Recherche. Das Kontextfenster umfasst eine Million Token, der Preis liegt bei 10 Dollar pro Million Eingabe-Token und 50 Dollar pro Million Ausgabe-Token. Fuer den Workshop zaehlt der Befund, dass die Modellentwicklung seit dem GPT-4-Beispiel von 2023 nicht stagniert."},
 
     {"_delta": True,
      "type": "content",
-     "title": "Mythos und Fable: Sicherheit als Systemdesign",
-     "body": "Das volle Modell **Mythos 5** erhält nur ein kleiner Kreis von Cyberverteidigern und Infrastrukturbetreibern (*Project Glasswing*, mit der US-Regierung).\n\n"
-             "Das öffentliche **Fable 5** hat eingebaute **Klassifikatoren**: Anfragen zu *Cybersecurity*, Bio/Chemie oder Modell-*Destillation* beantwortet automatisch ein schwächeres Modell.\n\n"
-             "**Verantwortung wird ins System gebaut.** Dieselbe Logik begleitet uns heute auf Nutzerseite: prüfen, bevor man vertraut.\n\n"
-             "Die Live-Demo am Ende läuft auf genau diesem Modell.",
-     "source": "Anthropic (2026). Claude Fable 5 and Claude Mythos 5. anthropic.com/news.",
-     "notes": "Das volle Modell Mythos 5 erhaelt nur ein kleiner Kreis von Cyberverteidigern und Infrastrukturbetreibern im Rahmen von Project Glasswing in Kooperation mit der US-Regierung, weil die Mythos-Modelle Schwachstellen auf uebermenschlichem Niveau finden. Das oeffentliche Fable 5 nutzt dieselbe Technologie, aber Klassifikatoren leiten Anfragen zu Cybersecurity, Biologie und Chemie oder Modell-Destillation automatisch an ein schwaecheres Modell um. Die Verantwortung liegt damit nicht allein beim Nutzer, sondern ist in das System eingebaut. Die Live-Demo in Teil 3 laeuft auf Fable 5."},
+     "title": "Fable 5 und Mythos 5: gestufte Freigabe",
+     "body": "**Mythos 5** (volles Modell) erhält nur ein kleiner Kreis von Cyberverteidigern und Infrastrukturbetreibern (*Project Glasswing*, mit der US-Regierung).\n\n"
+             "**Fable 5** (öffentlich) nutzt dieselbe Technologie mit **Klassifikatoren**: Anfragen zu *Cybersecurity*, Bio/Chemie oder Modell-*Destillation* übernimmt automatisch das schwächere Modell *Opus 4.8*.\n\n"
+             "Die Schutzschicht liegt beim Anbieter, die fachliche Prüfung der Ergebnisse beim Nutzer: **Das Werkzeug rechnet, der Mensch verantwortet.**\n\n"
+             "Die Live-Demo in Teil 3 läuft auf *Fable 5*.",
+     "source": "Anthropic (2026). Claude Fable 5 and Claude Mythos 5. anthropic.com/news/claude-fable-5-mythos-5",
+     "notes": "Die Mythos-Modelle fanden Anfang 2026 Sicherheitsluecken auf einem Niveau, das die Cybersecurity-Branche alarmierte. Das volle Modell Mythos 5 erhaelt deshalb nur ein kleiner Kreis von Cyberverteidigern und Infrastrukturbetreibern im Rahmen von Project Glasswing in Kooperation mit der US-Regierung. Das oeffentliche Fable 5 basiert auf derselben Technologie. Klassifikatoren erkennen Anfragen zu Cybersecurity, Biologie und Chemie sowie Modell-Destillation und uebergeben sie automatisch an das schwaechere Modell Opus 4.8. Die Schutzschicht liegt damit beim Anbieter, die fachliche Pruefung der Ergebnisse bleibt Aufgabe der Nutzerinnen und Nutzer. Die Live-Demo in Teil 3 laeuft auf Fable 5."},
 
     {"type": "learning",
      "title": "Lernziele",
@@ -213,36 +213,71 @@ slides = [
      "subtitle": "Live-Demo Claude Code und Einordnung"},
 
     # --------------------------------------- Live-Demo (Delta 10.06.2026)
+    # Referenzprojekt vetmed-datenanalyse: oeffentliche Wissensbilanzen 2012-2025
     {"_delta": True,
      "type": "content",
-     "title": "Live: derselbe Fall in *Claude Code*",
-     "body": "Gleiche Daten, gleiche Fragen wie eben. Ein Unterschied:\n\n"
-             "• Teil 2: **fünf Fragen** nacheinander, nach jeder geprüft\n"
-             "• Jetzt: **ein Arbeitsauftrag**, formuliert wie an eine Kollegin\n\n"
-             "Das Werkzeug plant die Schritte selbst, schreibt den Code und führt ihn aus. Am Ende steht ein **HTML-Report**, der beim nächsten Quartal mit neuen Daten erneut laufen kann.",
-     "notes": "Der dritte Teil zeigt denselben Verwaltungsfall in Claude Code. In Teil 2 wurden fuenf Fragen nacheinander gestellt und nach jeder geprueft. Jetzt wird der gesamte Arbeitsauftrag auf einmal formuliert, so wie man ihn einer Kollegin geben wuerde. Das Werkzeug plant die Schritte selbst, schreibt ein Python-Skript und erzeugt einen HTML-Report, der beim naechsten Quartal mit neuen Daten erneut laufen kann."},
+     "title": "Live: vom Bericht zum Dashboard",
+     "body": "Der dritte Teil wechselt zu **echten Daten**: den öffentlichen **Wissensbilanzen** der Vetmeduni 2012 bis 2025 (vierzehn PDFs).\n\n"
+             "• Referenzprojekt: PDFs, daraus geprüfte Kennzahlen, daraus ein **Dashboard**\n"
+             "• Methode **Promptotyping**: erst Wissen in Dokumente (*DATA.md*, *SPECIFICATION.md*), dann Code\n"
+             "• Öffentliche Daten, daher ist ein *Cloud*-Agent wie *Claude Code* hier unbedenklich\n\n"
+             "Live arbeiten wir mit der fertigen Kennzahlen-Datei; die fragile PDF-Extraktion ist vorbereitet.",
+     "source": "Wissensbilanzen der Veterinärmedizinischen Universität Wien (vetmeduni.ac.at, Berichte) · Repo: vetmed-datenanalyse",
+     "notes": "Der dritte Teil arbeitet mit echten oeffentlichen Daten. Universitaeten muessen ihre Wissensbilanz jaehrlich veroeffentlichen, die Kennzahlen folgen der Wissensbilanz-Verordnung. Das Referenzprojekt vetmed-datenanalyse extrahiert aus den vierzehn PDFs der Jahrgaenge 2012 bis 2025 die Personal- und Drittmittelkennzahlen und baut daraus ein Dashboard. Die Methode ist Promptotyping, also Wissen in Dokumenten vor Code. Weil alle Daten oeffentlich sind, ist der Einsatz eines Cloud-Agenten unbedenklich. Fuer interne oder personenbezogene Daten gilt das nicht, dort bleibt die Academic AI der Weg. Die PDF-Extraktion ist vorbereitet, weil sie auf echten Quellen fragil ist. Die Live-Demo arbeitet mit der fertigen Kennzahlen-Datei."},
 
     {"_delta": True,
      "type": "handson",
-     "title": "Der eine Auftrag",
+     "title": "Der Arbeitsauftrag",
      "body": "Worauf Sie live achten können:\n\n"
-             "1. **Planung**: das Modell legt sich einen Arbeitsplan an\n"
-             "2. **Permissions**: vor der Skript-Ausführung kommt die Nachfrage\n"
-             "3. **Code statt Schätzen**: es schreibt und prüft *Python*\n"
-             "4. Findet es die **Schreibvarianten-Falle** selbst?",
-     "prompt": "Lies VetMed_Verwaltung_Demodaten.xlsx\n(Blatt \"Personal\") und erstelle die\nPersonalauswertung für die\nWissensbilanz: Kopfzahl und VZÄ je\nOrganisationseinheit, Geschlechter-\nverteilung gesamt und je Funktions-\ngruppe. Prüfe und bereinige die\nDatenqualität, dokumentiere jede\nBereinigung. Erzeuge einen HTML-\nReport mit Tabellen und Diagrammen.\nVerifiziere die Quersummen gegen\ndie Zeilenzahl.",
-     "notes": "Der Auftrag steht zum Mitlesen auf der Folie und wird live in Claude Code ausgefuehrt. Sichtbar werden der Arbeitsplan des Modells, die Permission-Nachfrage vor der Skript-Ausfuehrung und die Code-Ausfuehrung selbst. Offen bleibt, ob das Modell die zwei Schreibweisen der Kleintierklinik ohne Hinweis zusammenfuehrt. Falls nicht, erfolgt der Eingriff live."},
+             "1. **Kontext zuerst**: das Modell liest *DATA.md*, bevor es rechnet\n"
+             "2. **Permissions**: vor jeder Ausführung kommt die Nachfrage\n"
+             "3. **Tests als Gate**: der **Datenvertrag** muss grün bleiben\n"
+             "4. Ergebnis: das **Dashboard** im Browser",
+     "prompt": "Lies knowledge/DATA.md und\nknowledge/SPECIFICATION.md.\nArbeite mit den Kennzahlen in\ndata/kennzahlen/.\nPrüfe zuerst den Datenvertrag\n(python -m pytest -q).\nBaue dann das Dashboard neu und\nfasse die wichtigsten Befunde zu\nPersonal, Frauenanteil und\nDrittmitteln zusammen.",
+     "notes": "Der Auftrag wird live in Claude Code ausgefuehrt. Das Modell liest zuerst die Wissensdokumente DATA.md und SPECIFICATION.md, das ist der Kern von Promptotyping. Vor jeder Skript-Ausfuehrung kommt die Permission-Nachfrage. Der Datenvertrag in tests/test_datenvertrag.py prueft zwanzig Bedingungen, darunter Quersummen, Frauenanteile und verankerte Sollwerte aus den PDFs. Erst wenn die Tests gruen sind, wird das Dashboard gebaut und im Browser geoeffnet."},
+
+    {"_delta": True,
+     "type": "content_with_image",
+     "title": "Befund: Frauenanteil 2012 bis 2025",
+     "body": "• Wissenschaftliches Personal: Frauenanteil von **59 auf 66 %**\n"
+             "• Professor:innen (ab 2021 berichtet): von **32 auf 53 %**, von 12 auf 25 Personen\n"
+             "• Kleine Grundgesamtheit bei Professuren: einzelne Berufungen bewegen die Kurve stark\n\n"
+             "Lesehinweis: Die Werte sind **Kopfzahlen**, nicht *Vollzeitäquivalente*.",
+     "placeholder": "wb_frauenanteil.png\nFrauenanteil wiss. Personal und Professor:innen",
+     "source": "Wissensbilanzen Vetmeduni 2012–2025, Kennzahl 1.A.1; eigene Aufbereitung (vetmed-datenanalyse).",
+     "notes": "Die Abbildung zeigt den Frauenanteil nach Kopfzahl aus vierzehn Jahrgaengen. Im wissenschaftlichen Personal stieg der Anteil von 59,3 auf 66,4 Prozent. Bei den Professuren, die erst ab 2021 getrennt berichtet werden, stieg er von 31,6 auf 53,2 Prozent, in absoluten Zahlen von 12 auf 25 Professorinnen. Bei kleinen Grundgesamtheiten bewegen einzelne Berufungen die Kurve stark, das gehoert zur Interpretation dazu. Die Werte beziehen sich auf Kopfzahlen, nicht auf Vollzeitaequivalente."},
+
+    {"_delta": True,
+     "type": "content_with_image",
+     "title": "Befund: Personal und Drittmittel",
+     "body": "• Wissenschaftliches Personal: von 648 Köpfen (2012) zum Höchststand 2019, zuletzt 777\n"
+             "• Drittmittelerlöse (F&E) schwanken deutlich: Spitze **21,7 Mio Euro** (2019), danach Rückgang und Erholung\n"
+             "• Einzelne Großprojekte prägen die Jahressumme; die Schwankung selbst ist kein Alarmsignal",
+     "placeholder": "wb_personal_drittmittel.png\nPersonalstand und Drittmittelerlöse",
+     "source": "Wissensbilanzen Vetmeduni, Kennzahlen 1.A.1 und 1.C.1; eigene Aufbereitung (vetmed-datenanalyse).",
+     "notes": "Das wissenschaftliche Personal waechst von 648 Koepfen im Jahr 2012 auf einen Hoechststand um 2019 und liegt zuletzt bei 777. Das allgemeine Personal verlaeuft parallel auf niedrigerem Niveau. Die Drittmittelerloese aus Forschung und Entwicklung schwanken zwischen rund 10 und 21,7 Millionen Euro, das Spitzenjahr ist 2019. Einzelne Grossprojekte praegen die Jahressumme, deshalb ist die Schwankung selbst kein Alarmsignal. Beide Reihen stammen aus denselben oeffentlichen Berichten."},
+
+    {"_delta": True,
+     "type": "content_with_image",
+     "title": "Das Dashboard",
+     "body": "Eine einzige *HTML*-Datei, offline lauffähig:\n\n"
+             "• Kennzahlen-Karten mit Vorjahresvergleich\n"
+             "• Diagramme zu Frauenanteil, Personalstand, Drittmitteln\n"
+             "• Umschalter Kopfzahl/*VZÄ*, Jahresfilter, *PNG*- und *CSV*-Export\n\n"
+             "Gebaut im Dialog mit *Claude Code*, gesichert durch den **Datenvertrag**.",
+     "placeholder": "wb_dashboard.png\nDashboard mit Kennzahlen-Karten und Frauenanteil",
+     "source": "vetmed-datenanalyse, dashboard/index.html.",
+     "notes": "Das Dashboard ist eine einzelne HTML-Datei ohne externe Abhaengigkeiten und laeuft offline per Doppelklick. Es zeigt Kennzahlen-Karten mit Vorjahresvergleich, Diagramme zu Frauenanteil, Personalstand und Drittmitteln, einen Umschalter zwischen Kopfzahl und Vollzeitaequivalenten, Jahresfilter sowie Export als PNG und CSV. Gebaut wurde es im Dialog mit Claude Code, die Datenbasis sichert der Datenvertrag mit zwanzig Pruefungen."},
 
     {"_delta": True,
      "type": "content",
-     "title": "Verifikation: Sie kennen die Zahlen",
-     "body": "Die Sollwerte aus Teil 2 sind der Prüfanker:\n\n"
-             "• **150** Personen, **110,00** VZÄ\n"
-             "• Kleintierklinik **20** (nicht 12 + 8)\n"
-             "• Frauenanteil **46 %**\n\n"
-             "Übersieht das Modell die Schreibvarianten, greifen wir ein. Genau das ist die Rolle des *Critical Expert*.\n\n"
+     "title": "Verifikation: der Datenvertrag",
+     "body": "Bei echten Daten prüfen **Tests** statt bekannter Sollwerte:\n\n"
+             "• **Konsistenz**: Frauen plus Männer ergibt Gesamt, keine Lücken, Frauenanteil korrekt berechnet\n"
+             "• **Quellbindung**: verankerte Werte aus den PDFs (*Golden Values*), Überlappung benachbarter Jahrgänge\n\n"
+             "Konsistenz allein sichert keine Korrektheit gegen die Quelle. Die Anker setzt der Mensch: *Critical Expert in the Loop*.\n\n"
              "**Mehr Autonomie heißt mehr Verifikation, nicht weniger.** Vertiefung: *VetMed Winter School*.",
-     "notes": "Die Teilnehmenden kennen die Sollwerte aus Teil 2 und pruefen das Ergebnis selbst. 150 Personen, 110 Vollzeitaequivalente, 20 Personen in der konsolidierten Kleintierklinik und 46 Prozent Frauenanteil. Uebersieht das Modell die Schreibvarianten, wird live eingegriffen. Die Verifikations-Checkliste gilt fuer beide Werkzeuge unveraendert. Je autonomer das Werkzeug arbeitet, desto wichtiger wird die Pruefung. Die VetMed Winter School vertieft diesen Arbeitsmodus."},
+     "notes": "Bei echten Daten gibt es keine vorab bekannten Sollwerte wie beim synthetischen Datensatz in Teil 2. An ihre Stelle tritt der Datenvertrag mit zwanzig Pruefungen auf zwei Ebenen. Die Konsistenzebene prueft, dass Frauen plus Maenner Gesamt ergibt, dass keine Jahrgaenge fehlen und dass der Frauenanteil korrekt berechnet ist. Die Quellbindungsebene verankert einzelne Werte direkt aus den PDFs und prueft die Ueberlappung benachbarter Jahrgaenge. Konsistenz allein sichert keine Korrektheit gegen die Quelle, erst beide Ebenen zusammen. Die verankerten Werte hat der Mensch aus den Quellen gesetzt. Je autonomer das Werkzeug arbeitet, desto wichtiger wird diese Pruefung. Die VetMed Winter School vertieft den Arbeitsmodus."},
 
     {"type": "content",
      "title": "Welches Werkzeug wann?",
