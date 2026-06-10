@@ -140,7 +140,7 @@ var BUILDERS = {
       return;
     }
     try {
-      copySlideInto(CURRENT_PRES, config, slide);
+      return copySlideInto(CURRENT_PRES, config, slide);
     } catch (err) {
       BUILDERS.image_placeholder(slide, {
         title: item.fallbackTitle || 'Folie manuell kopieren',

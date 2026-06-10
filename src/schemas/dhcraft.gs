@@ -25,7 +25,7 @@ var D = {
   TEXT_DARK:      '#000000',  // alias für Fließtext/Labels — bewusst = TEXT_BLACK
   TEXT_GRAY:      '#666666',
   TEXT_MUTED:     '#888888',
-  TEXT_TEAL:      '#2a7a7a',  // nur für Hyperlinks (via opts.links)
+  TEXT_TEAL:      '#0097a7',  // nur für Hyperlinks (via opts.links)
 
   BORDER_PLACEHOLDER: '#aaaaaa',
 
@@ -35,7 +35,7 @@ var D = {
   S_TITLE:      28,
   S_SUBTITLE:   16,
   S_META:       11,
-  S_HEADING:    22,
+  S_HEADING:    20,
   S_BODY:       13,
   S_BODY_SM:    11,
   S_SOURCE:     9,

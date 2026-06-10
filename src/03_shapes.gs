@@ -3,6 +3,7 @@
  *
  * fillBg(slide)         — weißer Hintergrund auf Content-Folien (Master-Gradient nur auf Titel).
  * addSource(slide, s)   — kursive Quellenzeile am Fuß (y=370), grau.
+ * addSpeakerNotes       — Speaker Notes in die Notes-Page schreiben.
  * addSlideNumber        — Foliennummer unten rechts.
  * addPromptBox          — gestrichelte hellgraue Box mit Monospace-Text (Consolas).
  * addPlaceholderBox     — gestrichelte Platzhalter-Box mit kursiver Beschreibung.
@@ -20,6 +21,11 @@ function addSource(slide, text) {
     font: D.FONT, size: D.S_SOURCE,
     italic: true, color: D.TEXT_GRAY
   });
+}
+
+function addSpeakerNotes(slide, text) {
+  if (!text) return;
+  slide.getNotesPage().getSpeakerNotesShape().getText().setText(text);
 }
 
 function addSlideNumber(slide, num) {
