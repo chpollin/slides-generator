@@ -11,12 +11,25 @@ function getTag2Content() {
 
     { type: 'section', title: 'Block 1', subtitle: 'Grundlagen generativer KI' },
 
-    { type: 'copy', ref: 'wie_llms', fallbackTitle: 'Wie LLMs funktionieren', fallbackDesc: 'Tokenisierung, Wahrscheinlichkeitsverteilung, autoregressive Generierung' },
+    { type: 'copy', ref: 'tokenization', fallbackTitle: 'Tokenization', fallbackDesc: 'Zerlegung von Text in Tokens als Input-Repr\u00e4sentation' },
 
-    { type: 'content_with_image', title: 'Die "Gestalt" eines Wikipedia-Artikels', body: '*LLMs* k\u00f6nnen nicht direkt auf Wikipedia zugreifen. Sie haben die "**Gestalt**" des Textes (Karpathy): komprimierte statistische Muster aus dem *Pre-Training*.\n\nBei Text \u00fcber Zebras nutzt das Modell *Next-Token-Prediction*, nicht den gespeicherten Artikel. Deshalb: koh\u00e4rent \u00fcber Zebraarten sprechen, aber nicht den exakten Text reproduzieren.\n\n**Parametrisches Wissen** (in den Gewichten) vs. **kontextuelles Wissen** (im *Prompt*). Externe Quellen nur \u00fcber *Tool Use* (*RAG*, *MCP*).', placeholder: 'Wikipedia-Artikel "Zebras" (vollst\u00e4ndig)\nvs. komprimierte Gestalt im Parameterraum', source: 'Karpathy, A. (2024). Konzept via Pollin (2025), lecture-manuscript.' },
+    { type: 'copy', ref: 'embeddings_dog_cat_stone', fallbackTitle: 'Embeddings (dog, cat, stone)', fallbackDesc: 'Tokens als Vektoren, semantische N\u00e4he im Raum' },
+
+    { type: 'copy', ref: 'embeddings_king_queen', fallbackTitle: 'Embeddings (king and queen)', fallbackDesc: 'Vektor-Arithmetik mit Embeddings' },
+
+    { type: 'copy', ref: 'embeddings_shakespeare', fallbackTitle: 'Embeddings (Shakespeare)', fallbackDesc: 'Kontextuelle Embeddings an einem Shakespeare-Satz' },
+
+    { type: 'copy', ref: 'next_token_prediction', fallbackTitle: 'Next Token Prediction', fallbackDesc: 'Autoregressive Generierung Token f\u00fcr Token' },
 
     { type: 'copy', ref: 'transformer', fallbackTitle: 'Transformer-Architektur', fallbackDesc: 'Attention-Mechanismus, Encoder-Decoder vs. Decoder-only' },
-    { type: 'copy', ref: 'training_phases', fallbackTitle: 'Pre-Training / Post-Training / Embeddings', fallbackDesc: 'Pre-Training = Knowledge, Post-Training = Skills' },
+
+    { type: 'copy', ref: 'pre_training', fallbackTitle: 'Pre-Training', fallbackDesc: 'Kompression von Wissen, Next-Token-Training, verlustbehaftet und probabilistisch',
+      notes: 'Pre-Training ist die Phase, in der das Modell auf gro\u00dfen Datenmengen trainiert wird. Der Begriff \u201eKompression von Wissen\u201c stammt sinngem\u00e4\u00df von Andrej Karpathy.\n\nAls Input dienen Billionen von Tokens, die \u00fcberwiegend aus Webdaten stammen. Zunehmend werden auch synthetische Daten eingesetzt. Die Trainingsaufgabe besteht darin, das jeweils n\u00e4chste Token in einer Sequenz vorherzusagen. Daraus lernt das Modell implizit Grammatik, Weltwissen und Schlussfolgerungsmuster.\n\nDas Ergebnis hat drei Eigenschaften. Die Kompression ist verlustbehaftet: Das Modell speichert keine Trainingsdaten w\u00f6rtlich, sondern statistische Muster. Es ist probabilistisch: Das Modell arbeitet mit Wahrscheinlichkeitsverteilungen \u00fcber m\u00f6gliche Fortsetzungen, nicht mit gesicherten Fakten. Und es hat eine zeitlich fixierte Wissensgrenze, sofern keine zus\u00e4tzlichen Werkzeuge wie Websuche eingebunden werden.\n\nPre-Training erfordert erhebliche Ressourcen an Geld, Energie und spezialisierter Hardware. \u201eLangsam\u201c bezieht sich auf den Trainingsprozess, nicht auf die sp\u00e4tere Nutzung.\n\nDas Bild links unten zeigt ein geplantes Rechenzentrum von Meta und illustriert die Dimension der erforderlichen Infrastruktur.' },
+
+    { type: 'copy', ref: 'gestalt_zebras', fallbackTitle: 'Die Gestalt eines Wikipedia-Artikels \u00fcber Zebras', fallbackDesc: 'Karpathys Gestalt-Begriff, Muster statt Artikeltext, Tool Use f\u00fcr exakte Fakten',
+      notes: 'Diese Folie veranschaulicht, was \u201eKompression\u201c aus der vorherigen Folie konkret bedeutet. Ein Wikipedia-Artikel \u00fcber Zebras war m\u00f6glicherweise Teil der Trainingsdaten. Das Modell hat daraus Muster \u00fcber Zebras extrahiert, etwa dass Zebras Pferde mit Streifen sind, in Afrika vorkommen und zu den S\u00e4ugetieren geh\u00f6ren. Es hat aber nicht den Artikeltext gespeichert. Karpathy verwendet den Begriff \u201eGestalt\u201c, um diesen Unterschied zu fassen: Das Modell kennt die Gestalt des Wissens, nicht dessen exakte Form. Deshalb kann ein LLM Fragen \u00fcber Zebras beantworten, aber nicht den Wikipedia-Artikel w\u00f6rtlich wiedergeben. Wenn ein LLM aktuelle oder exakte Informationen ben\u00f6tigt, kann es \u00fcber Tool Use auf externe Quellen zugreifen, etwa eine Websuche durchf\u00fchren. Das ist ein grundlegend anderer Mechanismus als das im Training erworbene Wissen.' },
+
+    { type: 'copy', ref: 'context_window_8k', fallbackTitle: 'Context Window = 8K', fallbackDesc: 'Maximale Tokenanzahl f\u00fcr Input plus Output' },
 
     { type: 'content', title: 'Modelllandschaft', body: '**Propriet\u00e4re Modelle:** GPT-4o, o3 (*OpenAI*), Claude Opus/Sonnet (*Anthropic*), Gemini (*Google*). Zugang \u00fcber *API*, kein Einblick in Gewichte.\n\n***Open-Weights*-Modelle:** Llama (*Meta*), Mistral (Frankreich), DeepSeek (China), Qwen (*Alibaba*). Lokal betreibbar, Training oft intransparent.\n\n**Lokale Modelle:** \u00dcber *Ollama*, *LM Studio*, *vLLM* auf eigener Hardware. Volle Kontrolle, begrenzte Leistung.\n\nEntscheidungskriterien: Leistung, Kosten, Datenschutz, institutionelle Vorgaben.' },
 

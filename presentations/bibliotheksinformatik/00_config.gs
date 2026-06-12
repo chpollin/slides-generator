@@ -22,9 +22,13 @@ var PRESENTER = {
 // Ausgewählte Slides aus lib/slide-library.gs. Keys sind die refs,
 // die im Content-Array als { type: 'copy', ref: '...' } erscheinen.
 var COPY_SLIDES = {
-  wissenspyramide:  SLIDE_REGISTRY.wissenspyramide,
-  dikw_network:     SLIDE_REGISTRY.dikw_network,
-  wie_llms:         SLIDE_REGISTRY.wie_llms,
-  transformer:      SLIDE_REGISTRY.transformer,
-  training_phases:  SLIDE_REGISTRY.training_phases
+  tokenization:             SLIDE_REGISTRY.tokenization,
+  embeddings_dog_cat_stone: SLIDE_REGISTRY.embeddings_dog_cat_stone,
+  embeddings_king_queen:    SLIDE_REGISTRY.embeddings_king_queen,
+  embeddings_shakespeare:   SLIDE_REGISTRY.embeddings_shakespeare,
+  next_token_prediction:    SLIDE_REGISTRY.next_token_prediction,
+  transformer:              SLIDE_REGISTRY.transformer,
+  pre_training:             SLIDE_REGISTRY.pre_training,
+  gestalt_zebras:           SLIDE_REGISTRY.gestalt_zebras,
+  context_window_8k:        SLIDE_REGISTRY.context_window_8k
 };

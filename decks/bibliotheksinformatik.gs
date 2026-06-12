@@ -1,6 +1,6 @@
 /**
  * slides-generator — combined build for presentation: bibliotheksinformatik
- * Generated 2026-04-14 09:57 from c65eb5f
+ * Generated 2026-04-14 11:00 from 47f0cfd
  *
  * Paste this entire file into Google Apps Script (replaces existing code).
  * Requires: Slides API v1 service enabled.
@@ -33,7 +33,7 @@ var D = {
   TEXT_DARK:      '#000000',  // alias für Fließtext/Labels — bewusst = TEXT_BLACK
   TEXT_GRAY:      '#666666',
   TEXT_MUTED:     '#888888',
-  TEXT_TEAL:      '#2a7a7a',  // nur für Hyperlinks (via opts.links)
+  TEXT_TEAL:      '#0097a7',  // nur für Hyperlinks (via opts.links)
 
   BORDER_PLACEHOLDER: '#aaaaaa',
 
@@ -43,7 +43,7 @@ var D = {
   S_TITLE:      28,
   S_SUBTITLE:   16,
   S_META:       11,
-  S_HEADING:    22,
+  S_HEADING:    20,
   S_BODY:       13,
   S_BODY_SM:    11,
   S_SOURCE:     9,
@@ -87,17 +87,20 @@ var D = {
  */
 
 var SOURCE_PRES = {
-  DATA_LIB:   '11PAq52of5siHNYDwC7ksu5S-7EzJKFB1rcxSOlqe3Z8', // Data Librarian Wien 2023
-  BIBLIOTHEK: '1BmPZTnL2JULg_nXrU8mx2EBfmhaDPaVnoiaZU8G1rjI'  // Bibliotheksinformatik (Quelle)
+  TEMPLATE: '1ULx2vC-lUsJ2nj4IVV4USlclNkWscRqqyd28YAFIRFs' // Slide Generator Template
 };
 
 // Flach — keine thematische Zwischenebene. Neue Einträge hier, nach Bedarf sortiert.
 var SLIDE_REGISTRY = {
-  wissenspyramide:  { pres: SOURCE_PRES.DATA_LIB,   id: 'gc43cc7a388_0_7'   },
-  dikw_network:     { pres: SOURCE_PRES.DATA_LIB,   id: 'gc43cc7a388_0_248' },
-  wie_llms:         { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_278' },
-  transformer:      { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_348' },
-  training_phases:  { pres: SOURCE_PRES.BIBLIOTHEK, id: 'g3972826d70a_0_359' }
+  tokenization:             { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_383' },
+  embeddings_dog_cat_stone: { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_455' },
+  embeddings_king_queen:    { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_462' },
+  embeddings_shakespeare:   { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_470' },
+  next_token_prediction:    { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_5'   },
+  transformer:              { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_143' },
+  pre_training:             { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_228' },
+  gestalt_zebras:           { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_366' },
+  context_window_8k:        { pres: SOURCE_PRES.TEMPLATE, id: 'g3d60558fe24_0_486' }
 };
 
 /**
@@ -126,33 +129,42 @@ function generate(presId, content) {
   var pres = SlidesApp.openById(presId);
   CURRENT_PRES = pres;
 
-  var slides = pres.getSlides();
-  for (var i = slides.length - 1; i >= 1; i--) slides[i].remove();
+  try {
+    var slides = pres.getSlides();
+    for (var i = slides.length - 1; i >= 1; i--) slides[i].remove();
 
-  var slideNum = 0;
-  for (var i = 0; i < content.length; i++) {
-    var item = content[i];
-    slideNum++;
+    var slideNum = 0;
+    for (var i = 0; i < content.length; i++) {
+      var item = content[i];
+      slideNum++;
 
-    var slide;
-    if (i === 0) {
-      slide = slides[0];
-      var els = slide.getPageElements();
-      for (var e = els.length - 1; e >= 0; e--) els[e].remove();
-    } else {
-      slide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
+      var slide;
+      if (i === 0) {
+        slide = slides[0];
+        var els = slide.getPageElements();
+        for (var e = els.length - 1; e >= 0; e--) els[e].remove();
+      } else {
+        slide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
+      }
+
+      var builder = BUILDERS[item.type];
+      if (!builder) {
+        throw new Error('Unknown slide type "' + item.type + '" at index ' + i);
+      }
+      // Builder kann eine neue Folie zurückgeben (copy-Fall) — sonst bleibt slide gültig.
+      var actualSlide = builder(slide, item) || slide;
+
+      // Foliennummern auf Content-Folien (nicht auf Titel, Section, Copy).
+      if (item.type !== 'title' && item.type !== 'section' && item.type !== 'copy') {
+        addSlideNumber(actualSlide, slideNum);
+      }
+
+      // Speaker Notes: item.notes überschreibt ggf. die von copy mitgenommenen Notes.
+      if (item.notes) addSpeakerNotes(actualSlide, item.notes);
     }
-
-    var builder = BUILDERS[item.type];
-    if (!builder) {
-      throw new Error('Unknown slide type "' + item.type + '" at index ' + i);
-    }
-    builder(slide, item);
-
-    // Foliennummern auf Content-Folien (nicht auf Titel, Section, Copy).
-    if (item.type !== 'title' && item.type !== 'section' && item.type !== 'copy') {
-      addSlideNumber(slide, slideNum);
-    }
+  } finally {
+    // Temp-Kopien der Source-Präsentationen aufräumen, auch bei Fehler/Timeout.
+    clearSourceCache();
   }
 }
 
@@ -298,7 +310,7 @@ var BUILDERS = {
       return;
     }
     try {
-      copySlideInto(CURRENT_PRES, config, slide);
+      return copySlideInto(CURRENT_PRES, config, slide);
     } catch (err) {
       BUILDERS.image_placeholder(slide, {
         title: item.fallbackTitle || 'Folie manuell kopieren',
@@ -385,6 +397,7 @@ function parseInlineFormatting(text) {
  *
  * fillBg(slide)         — weißer Hintergrund auf Content-Folien (Master-Gradient nur auf Titel).
  * addSource(slide, s)   — kursive Quellenzeile am Fuß (y=370), grau.
+ * addSpeakerNotes       — Speaker Notes in die Notes-Page schreiben.
  * addSlideNumber        — Foliennummer unten rechts.
  * addPromptBox          — gestrichelte hellgraue Box mit Monospace-Text (Consolas).
  * addPlaceholderBox     — gestrichelte Platzhalter-Box mit kursiver Beschreibung.
@@ -402,6 +415,11 @@ function addSource(slide, text) {
     font: D.FONT, size: D.S_SOURCE,
     italic: true, color: D.TEXT_GRAY
   });
+}
+
+function addSpeakerNotes(slide, text) {
+  if (!text) return;
+  slide.getNotesPage().getSpeakerNotesShape().getText().setText(text);
 }
 
 function addSlideNumber(slide, num) {
@@ -459,28 +477,44 @@ function addAiBadge(slide, x, y) {
 /**
  * Slide-Copy-Utility
  *
- * Kopiert eine Folie aus einer Quell-Präsentation in die Ziel-Präsentation.
- * Arbeitet über temporäre Drive-Kopie der Quell-Präsentation, reduziert auf
- * die Ziel-Folie, hängt sie an und löscht die temporäre Datei.
+ * Kopiert Folien aus Quell-Präsentationen in die Ziel-Präsentation.
+ * Pro Source-Präsentation wird einmalig eine temporäre Drive-Kopie angelegt
+ * und in SOURCE_CACHE gehalten, damit mehrere Copy-Aufrufe aus derselben
+ * Quelle nicht jedes Mal eine vollständige Drive-Kopie auslösen (teuer).
+ *
+ * generate() in 00_core.gs räumt den Cache am Ende via clearSourceCache() auf.
+ * Ohne dieses Cleanup bleiben temporäre Kopien im Drive-Papierkorb liegen.
  *
  * Voraussetzungen: Google Slides API als Dienst aktiviert, DriveApp-Berechtigung.
  */
 
+// Pro generate()-Lauf: Source-Pres-ID → {file, pres}.
+var SOURCE_CACHE = {};
+
 function copySlideInto(targetPres, config, placeholderSlide) {
-  var tempFile = DriveApp.getFileById(config.pres).makeCopy('_temp_slide_copy');
-  var tempPres = SlidesApp.openById(tempFile.getId());
-  var tempSlides = tempPres.getSlides();
+  var cache = SOURCE_CACHE[config.pres];
+  if (!cache) {
+    var tempFile = DriveApp.getFileById(config.pres).makeCopy('_temp_slide_copy_' + Date.now());
+    var tempPres = SlidesApp.openById(tempFile.getId());
+    cache = { file: tempFile, pres: tempPres };
+    SOURCE_CACHE[config.pres] = cache;
+  }
+  var tempSlides = cache.pres.getSlides();
   var sourceSlide = null;
   for (var i = 0; i < tempSlides.length; i++) {
     if (tempSlides[i].getObjectId() === config.id) { sourceSlide = tempSlides[i]; break; }
   }
-  if (!sourceSlide) { tempFile.setTrashed(true); throw new Error('Slide not found: ' + config.id); }
-  for (var i = tempSlides.length - 1; i >= 0; i--) {
-    if (tempSlides[i].getObjectId() !== config.id) tempSlides[i].remove();
-  }
-  targetPres.appendSlide(sourceSlide, SlidesApp.SlideLinkingMode.NOT_LINKED);
+  if (!sourceSlide) throw new Error('Slide not found: ' + config.id);
+  var appended = targetPres.appendSlide(sourceSlide, SlidesApp.SlideLinkingMode.NOT_LINKED);
   placeholderSlide.remove();
-  tempFile.setTrashed(true);
+  return appended;
+}
+
+function clearSourceCache() {
+  for (var k in SOURCE_CACHE) {
+    try { SOURCE_CACHE[k].file.setTrashed(true); } catch (e) {}
+  }
+  SOURCE_CACHE = {};
 }
 
 /**
@@ -507,11 +541,15 @@ var PRESENTER = {
 // Ausgewählte Slides aus lib/slide-library.gs. Keys sind die refs,
 // die im Content-Array als { type: 'copy', ref: '...' } erscheinen.
 var COPY_SLIDES = {
-  wissenspyramide:  SLIDE_REGISTRY.wissenspyramide,
-  dikw_network:     SLIDE_REGISTRY.dikw_network,
-  wie_llms:         SLIDE_REGISTRY.wie_llms,
-  transformer:      SLIDE_REGISTRY.transformer,
-  training_phases:  SLIDE_REGISTRY.training_phases
+  tokenization:             SLIDE_REGISTRY.tokenization,
+  embeddings_dog_cat_stone: SLIDE_REGISTRY.embeddings_dog_cat_stone,
+  embeddings_king_queen:    SLIDE_REGISTRY.embeddings_king_queen,
+  embeddings_shakespeare:   SLIDE_REGISTRY.embeddings_shakespeare,
+  next_token_prediction:    SLIDE_REGISTRY.next_token_prediction,
+  transformer:              SLIDE_REGISTRY.transformer,
+  pre_training:             SLIDE_REGISTRY.pre_training,
+  gestalt_zebras:           SLIDE_REGISTRY.gestalt_zebras,
+  context_window_8k:        SLIDE_REGISTRY.context_window_8k
 };
 
 // TAG 1 — Die Bibliothek als KI-Umgebung (22 Folien)
@@ -538,9 +576,6 @@ function getTag1Content() {
     { type: 'section', title: 'Block 2', subtitle: 'Informationswissenschaftliche Grundlagen' },
 
     { type: 'content', highlight: true, title: 'Nicht schon wieder: Daten, Information, Wissen', body: '**DIKW-Hierarchie** (Ackoff 1989) und ihre Grenzen: statisch, linear, \u00fcbersieht *Feedback-Loops*.\n\n**Langefors\u2019 infologische Gleichung** I=i(D,S,t): Information entsteht als Funktion von Daten (D), Wissensstrukturen des Empf\u00e4ngers (S) und Zeit (t). Information ist kein Ding, sondern ein **Konstrukt** (Kuhlen et al. 2023).\n\nBeispiel: 4\u00b0C ist **Daten**. "Es ist kalt, Jacke anziehen" ist **Alltagswissen**. "Dichteanomalie des Wassers" ist **Physikwissen**. Selbe Daten, anderes S.\n\nDie Variable S entspricht dem, was wir *Context Engineering* nennen.', source: 'Langefors (1966). Theoretical Analysis of Information Systems.\nKuhlen et al. (2023). Grundlagen der Informationswissenschaft. 7. Aufl. De Gruyter.' },
-
-    { type: 'copy', ref: 'wissenspyramide', fallbackTitle: 'Wissenspyramide', fallbackDesc: 'Wissenspyramide / Ladder of Knowledge' },
-    { type: 'copy', ref: 'dikw_network', fallbackTitle: 'DIKW Netzwerk-Visualisierung', fallbackDesc: 'Data \u2192 Information \u2192 Knowledge \u2192 Insight \u2192 Wisdom' },
 
     { type: 'discussion', question: 'Wo in Ihrem Arbeitsalltag transformieren Sie Daten zu Information, und wo entsteht daraus Wissen?' },
 
@@ -577,12 +612,25 @@ function getTag2Content() {
 
     { type: 'section', title: 'Block 1', subtitle: 'Grundlagen generativer KI' },
 
-    { type: 'copy', ref: 'wie_llms', fallbackTitle: 'Wie LLMs funktionieren', fallbackDesc: 'Tokenisierung, Wahrscheinlichkeitsverteilung, autoregressive Generierung' },
+    { type: 'copy', ref: 'tokenization', fallbackTitle: 'Tokenization', fallbackDesc: 'Zerlegung von Text in Tokens als Input-Repr\u00e4sentation' },
 
-    { type: 'content_with_image', title: 'Die "Gestalt" eines Wikipedia-Artikels', body: '*LLMs* k\u00f6nnen nicht direkt auf Wikipedia zugreifen. Sie haben die "**Gestalt**" des Textes (Karpathy): komprimierte statistische Muster aus dem *Pre-Training*.\n\nBei Text \u00fcber Zebras nutzt das Modell *Next-Token-Prediction*, nicht den gespeicherten Artikel. Deshalb: koh\u00e4rent \u00fcber Zebraarten sprechen, aber nicht den exakten Text reproduzieren.\n\n**Parametrisches Wissen** (in den Gewichten) vs. **kontextuelles Wissen** (im *Prompt*). Externe Quellen nur \u00fcber *Tool Use* (*RAG*, *MCP*).', placeholder: 'Wikipedia-Artikel "Zebras" (vollst\u00e4ndig)\nvs. komprimierte Gestalt im Parameterraum', source: 'Karpathy, A. (2024). Konzept via Pollin (2025), lecture-manuscript.' },
+    { type: 'copy', ref: 'embeddings_dog_cat_stone', fallbackTitle: 'Embeddings (dog, cat, stone)', fallbackDesc: 'Tokens als Vektoren, semantische N\u00e4he im Raum' },
+
+    { type: 'copy', ref: 'embeddings_king_queen', fallbackTitle: 'Embeddings (king and queen)', fallbackDesc: 'Vektor-Arithmetik mit Embeddings' },
+
+    { type: 'copy', ref: 'embeddings_shakespeare', fallbackTitle: 'Embeddings (Shakespeare)', fallbackDesc: 'Kontextuelle Embeddings an einem Shakespeare-Satz' },
+
+    { type: 'copy', ref: 'next_token_prediction', fallbackTitle: 'Next Token Prediction', fallbackDesc: 'Autoregressive Generierung Token f\u00fcr Token' },
 
     { type: 'copy', ref: 'transformer', fallbackTitle: 'Transformer-Architektur', fallbackDesc: 'Attention-Mechanismus, Encoder-Decoder vs. Decoder-only' },
-    { type: 'copy', ref: 'training_phases', fallbackTitle: 'Pre-Training / Post-Training / Embeddings', fallbackDesc: 'Pre-Training = Knowledge, Post-Training = Skills' },
+
+    { type: 'copy', ref: 'pre_training', fallbackTitle: 'Pre-Training', fallbackDesc: 'Kompression von Wissen, Next-Token-Training, verlustbehaftet und probabilistisch',
+      notes: 'Pre-Training ist die Phase, in der das Modell auf gro\u00dfen Datenmengen trainiert wird. Der Begriff \u201eKompression von Wissen\u201c stammt sinngem\u00e4\u00df von Andrej Karpathy.\n\nAls Input dienen Billionen von Tokens, die \u00fcberwiegend aus Webdaten stammen. Zunehmend werden auch synthetische Daten eingesetzt. Die Trainingsaufgabe besteht darin, das jeweils n\u00e4chste Token in einer Sequenz vorherzusagen. Daraus lernt das Modell implizit Grammatik, Weltwissen und Schlussfolgerungsmuster.\n\nDas Ergebnis hat drei Eigenschaften. Die Kompression ist verlustbehaftet: Das Modell speichert keine Trainingsdaten w\u00f6rtlich, sondern statistische Muster. Es ist probabilistisch: Das Modell arbeitet mit Wahrscheinlichkeitsverteilungen \u00fcber m\u00f6gliche Fortsetzungen, nicht mit gesicherten Fakten. Und es hat eine zeitlich fixierte Wissensgrenze, sofern keine zus\u00e4tzlichen Werkzeuge wie Websuche eingebunden werden.\n\nPre-Training erfordert erhebliche Ressourcen an Geld, Energie und spezialisierter Hardware. \u201eLangsam\u201c bezieht sich auf den Trainingsprozess, nicht auf die sp\u00e4tere Nutzung.\n\nDas Bild links unten zeigt ein geplantes Rechenzentrum von Meta und illustriert die Dimension der erforderlichen Infrastruktur.' },
+
+    { type: 'copy', ref: 'gestalt_zebras', fallbackTitle: 'Die Gestalt eines Wikipedia-Artikels \u00fcber Zebras', fallbackDesc: 'Karpathys Gestalt-Begriff, Muster statt Artikeltext, Tool Use f\u00fcr exakte Fakten',
+      notes: 'Diese Folie veranschaulicht, was \u201eKompression\u201c aus der vorherigen Folie konkret bedeutet. Ein Wikipedia-Artikel \u00fcber Zebras war m\u00f6glicherweise Teil der Trainingsdaten. Das Modell hat daraus Muster \u00fcber Zebras extrahiert, etwa dass Zebras Pferde mit Streifen sind, in Afrika vorkommen und zu den S\u00e4ugetieren geh\u00f6ren. Es hat aber nicht den Artikeltext gespeichert. Karpathy verwendet den Begriff \u201eGestalt\u201c, um diesen Unterschied zu fassen: Das Modell kennt die Gestalt des Wissens, nicht dessen exakte Form. Deshalb kann ein LLM Fragen \u00fcber Zebras beantworten, aber nicht den Wikipedia-Artikel w\u00f6rtlich wiedergeben. Wenn ein LLM aktuelle oder exakte Informationen ben\u00f6tigt, kann es \u00fcber Tool Use auf externe Quellen zugreifen, etwa eine Websuche durchf\u00fchren. Das ist ein grundlegend anderer Mechanismus als das im Training erworbene Wissen.' },
+
+    { type: 'copy', ref: 'context_window_8k', fallbackTitle: 'Context Window = 8K', fallbackDesc: 'Maximale Tokenanzahl f\u00fcr Input plus Output' },
 
     { type: 'content', title: 'Modelllandschaft', body: '**Propriet\u00e4re Modelle:** GPT-4o, o3 (*OpenAI*), Claude Opus/Sonnet (*Anthropic*), Gemini (*Google*). Zugang \u00fcber *API*, kein Einblick in Gewichte.\n\n***Open-Weights*-Modelle:** Llama (*Meta*), Mistral (Frankreich), DeepSeek (China), Qwen (*Alibaba*). Lokal betreibbar, Training oft intransparent.\n\n**Lokale Modelle:** \u00dcber *Ollama*, *LM Studio*, *vLLM* auf eigener Hardware. Volle Kontrolle, begrenzte Leistung.\n\nEntscheidungskriterien: Leistung, Kosten, Datenschutz, institutionelle Vorgaben.' },
 

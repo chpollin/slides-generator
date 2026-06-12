@@ -94,6 +94,17 @@ Die `.clasp.json` mit der Script-ID wird lokal angelegt und ist via `.gitignore`
 - `**fett**` für Schlüsselwörter
 - `*kursiv*` für englische Fachbegriffe
 
+## Speaker Notes
+
+Jedes Content-Item kann ein optionales `notes`-Feld tragen. Der Plain-Text-Inhalt wird in die Notes-Page der Folie geschrieben. Bei `copy`-Folien überschreibt ein gesetztes `notes` die aus der Quellpräsentation mitkopierten Notes, ohne Feld bleiben die Originalnotes erhalten.
+
+```javascript
+{ type: 'content', title: '...', body: '...',
+  notes: 'Sachlich-deskriptiver Fließtext, 3–6 Sätze.' }
+```
+
+Stilvorgabe für den Text: keine Doppelpunkte als rhetorisches Mittel, keine Gedankenstriche, keine didaktischen Regieanweisungen ("Zielt auf", "Dient als"), keine Meta-Kommentare über die Folie ("Vier Lernziele, die ..."), keine Metaphern ("Brücke", "Bogen"), keine abstrakten Platzhalterwörter ohne Spezifikation. Konkrete Sachbegriffe, direkte Aussagen.
+
 ## Lizenz
 
 MIT (wenn nicht anders vermerkt).
