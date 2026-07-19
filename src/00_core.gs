@@ -21,8 +21,27 @@ function generate(presId, content) {
     throw new Error('PRESENTER fehlt. Bitte in presentations/<name>/00_config.gs setzen.');
   }
 
-  var pres = SlidesApp.openById(presId);
+  // Prioritaet: Container-gebundene Praesentation vor openById.
+  // Container-Bindung (Extensions -> Apps Script im Ziel-Deck) ist eindeutig
+  // und umgeht Permission-Probleme, die openById gelegentlich hat.
+  var pres = SlidesApp.getActivePresentation();
+  if (!pres) {
+    try {
+      pres = SlidesApp.openById(presId);
+    } catch (err) {
+      throw new Error('Keine Praesentation verfuegbar. Script weder container-gebunden noch kann es openById("' + presId + '") ausfuehren. Loesung: Script unter Extensions -> Apps Script im Ziel-Deck anlegen. Original: ' + err.message);
+    }
+  }
+  if (!pres || typeof pres.getSlides !== 'function') {
+    throw new Error('Praesentationsobjekt ungueltig. pres=' + pres);
+  }
   CURRENT_PRES = pres;
+
+  Logger.log('=== generate() target ===');
+  Logger.log('Deck: ' + pres.getName() + ' (' + pres.getId() + ')');
+  Logger.log('URL:  ' + pres.getUrl());
+  Logger.log('Folien vor Clear: ' + pres.getSlides().length);
+  Logger.log('Content-Array Laenge: ' + (content ? content.length : 'undefined'));
 
   var slides = pres.getSlides();
   for (var i = slides.length - 1; i >= 1; i--) slides[i].remove();
@@ -32,24 +51,31 @@ function generate(presId, content) {
     var item = content[i];
     slideNum++;
 
-    var slide;
-    if (i === 0) {
-      slide = slides[0];
-      var els = slide.getPageElements();
-      for (var e = els.length - 1; e >= 0; e--) els[e].remove();
-    } else {
-      slide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
-    }
+    try {
+      var slide;
+      if (i === 0) {
+        slide = slides[0];
+        var els = slide.getPageElements();
+        for (var e = els.length - 1; e >= 0; e--) els[e].remove();
+      } else {
+        slide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
+      }
 
-    var builder = BUILDERS[item.type];
-    if (!builder) {
-      throw new Error('Unknown slide type "' + item.type + '" at index ' + i);
-    }
-    builder(slide, item);
+      var builder = BUILDERS[item.type];
+      if (!builder) {
+        Logger.log('FEHLER Folie ' + (i+1) + ': Unbekannter Typ "' + item.type + '"');
+        continue;
+      }
+      builder(slide, item);
 
-    // Foliennummern auf Content-Folien (nicht auf Titel, Section, Copy).
-    if (item.type !== 'title' && item.type !== 'section' && item.type !== 'copy') {
-      addSlideNumber(slide, slideNum);
+      if (item.type !== 'title' && item.type !== 'section' && item.type !== 'copy') {
+        addSlideNumber(slide, slideNum);
+      }
+      Logger.log('Folie ' + (i+1) + ' ok: type=' + item.type + (item.title ? ', title=' + String(item.title).substring(0, 40) : ''));
+    } catch (err) {
+      Logger.log('FEHLER Folie ' + (i+1) + ' (type=' + item.type + '): ' + err.message);
+      Logger.log('Stack: ' + err.stack);
     }
   }
+  Logger.log('generate() fertig. Folien im Deck jetzt: ' + pres.getSlides().length);
 }

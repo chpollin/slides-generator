@@ -43,6 +43,7 @@ var D = {
   S_QUESTION:   20,
   S_LABEL:      10,
   S_LEARNING:   14,
+  S_PROMPT:     11,
 
   // AI-Badge (siehe addAiBadge).
   // Werte aus Google-Slides-UI vermessen (cm) und in pt umgerechnet (1 cm = 28.35 pt).
