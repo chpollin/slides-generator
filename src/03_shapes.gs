@@ -46,7 +46,8 @@ function addPromptBox(slide, text, x, y, w, h) {
   rect.getBorder().setDashStyle(SlidesApp.DashStyle.DASH);
   var tf = rect.getText();
   tf.setText(text);
-  tf.getTextStyle().setFontFamily(D.FONT_MONO).setFontSize(10).setForegroundColor(D.TEXT_DARK);
+  tf.getTextStyle().setFontFamily(D.FONT_MONO).setFontSize(D.S_PROMPT).setForegroundColor(D.TEXT_DARK);
+  tf.getParagraphStyle().setLineSpacing(115);
   rect.setContentAlignment(SlidesApp.ContentAlignment.TOP);
   tf.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.START);
 }
